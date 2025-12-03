@@ -1,0 +1,10 @@
+{
+  "patterns": {},
+  "zone_stats": {},
+  "anomalies": [],
+  "metadata": {
+    "learning_period_days": 7,
+    "anomaly_threshold": 2.5,
+    "last_updated": "2025-12-03T15:11:23.429529"
+  }
+}
