@@ -370,10 +370,13 @@ class SurveillanceSystem:
                 message='Camera movement detected',
                 metadata=tamper_result
             )
-            self.alert_manager.trigger_alert(
-                zone_name='system',
-                confidence=1.0
-            )
+            # Trigger alert through the alert system
+            if hasattr(self.alert_manager, 'alert_system'):
+                self.alert_manager.alert_system.trigger_alert(
+                    zone_name='system',
+                    level='critical',
+                    duration=5.0
+                )
     
     def _print_status(self):
         """Print system status"""
