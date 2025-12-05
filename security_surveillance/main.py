@@ -280,6 +280,7 @@ class SurveillanceSystem:
         # Check zones
         zone_detections = self.zone_monitor.check_detections(detections)
         
+        # Log detections to database
         for zone_name, zone_dets in zone_detections.items():
             if not zone_dets:
                 continue
@@ -292,21 +293,18 @@ class SurveillanceSystem:
                     bbox=detection['bbox'],
                     metadata={'frame': self.frame_count}
                 )
-                
-                # Trigger alert
-                alert_triggered = self.alert_manager.trigger_alert(
-                    zone_name=zone_name,
-                    confidence=detection['confidence']
-                )
-                
-                if alert_triggered:
-                    # Log alert to database
-                    self.database.log_system_event(
-                        event_type='alert_triggered',
-                        severity='warning',
-                        message=f"Person detected in {zone_name}",
-                        metadata={'event_id': event_id, 'confidence': detection['confidence']}
-                    )
+        
+        # Process zone detections and trigger alerts
+        alerts_triggered = self.alert_manager.process_zone_detections(zone_detections)
+        
+        if alerts_triggered > 0:
+            # Log alert to database
+            self.database.log_system_event(
+                event_type='alert_triggered',
+                severity='warning',
+                message=f"Person detected - {alerts_triggered} alerts triggered",
+                metadata={'alerts_count': alerts_triggered}
+            )
                     
                     # Start recording
                     if self.recorder:
@@ -358,10 +356,14 @@ class SurveillanceSystem:
                 message='Camera covering detected',
                 metadata=tamper_result
             )
-            self.alert_manager.trigger_alert(
-                zone_name='system',
-                confidence=1.0
-            )
+            # Trigger alert through the alert system
+            if hasattr(self.alert_manager, 'alert_system'):
+                from modules.alerts import AlertLevel
+                self.alert_manager.alert_system.trigger_alert(
+                    zone_name='system',
+                    level=AlertLevel.CRITICAL,
+                    duration_sec=5.0
+                )
         
         if tamper_result.get('moved'):
             self.database.log_system_event(
