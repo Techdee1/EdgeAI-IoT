@@ -344,14 +344,17 @@ class SurveillanceSystem:
                             metadata=anomaly_result
                         )
                         print(f"🚨 ANOMALY: Unusual activity in {zone_name}")
-                
-                # Update daily stats
-                self.database.update_daily_stats(
-                    detections=1,
-                    alerts=1 if alert_triggered else 0,
-                    recordings=1 if alert_triggered else 0,
-                    zones=[zone_name]
-                )
+        
+        # Update daily stats if there were detections
+        if zone_detections:
+            total_detections = sum(len(dets) for dets in zone_detections.values())
+            all_zones = list(zone_detections.keys())
+            self.database.update_daily_stats(
+                detections=total_detections,
+                alerts=alerts_triggered,
+                recordings=1 if alerts_triggered > 0 else 0,
+                zones=all_zones
+            )
     
     def _handle_tamper(self, tamper_result):
         """Handle tampering detection"""
