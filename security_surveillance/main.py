@@ -372,10 +372,11 @@ class SurveillanceSystem:
             )
             # Trigger alert through the alert system
             if hasattr(self.alert_manager, 'alert_system'):
+                from modules.alerts import AlertLevel
                 self.alert_manager.alert_system.trigger_alert(
                     zone_name='system',
-                    level='critical',
-                    duration=5.0
+                    level=AlertLevel.CRITICAL,
+                    duration_sec=5.0
                 )
     
     def _print_status(self):
