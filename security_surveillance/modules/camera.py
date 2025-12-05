@@ -28,6 +28,9 @@ class CameraCapture:
         self.lock = threading.Lock()  # Thread-safe frame reading
         self.last_frame = None
         self.last_ret = False
+        self.consecutive_failures = 0
+        self.max_failures = 5  # Reconnect after 5 consecutive failures
+        self.reconnect_delay = 2  # seconds
         
     def start(self) -> bool:
         """Initialize camera connection"""
@@ -80,7 +83,7 @@ class CameraCapture:
     
     def read_frame(self) -> Tuple[bool, Optional[np.ndarray]]:
         """
-        Capture a single frame (thread-safe)
+        Capture a single frame (thread-safe with auto-reconnect)
         
         Returns:
             Tuple of (success, frame)
@@ -91,15 +94,79 @@ class CameraCapture:
         with self.lock:
             try:
                 ret, frame = self.cap.read()
-                if ret:
-                    # Cache the last successful frame
-                    self.last_frame = frame.copy() if frame is not None else None
-                    self.last_ret = ret
-                return ret, frame
+                
+                if ret and frame is not None:
+                    # Successful read - reset failure counter
+                    self.consecutive_failures = 0
+                    self.last_frame = frame.copy()
+                    self.last_ret = True
+                    return ret, frame
+                else:
+                    # Failed to read frame
+                    self.consecutive_failures += 1
+                    
+                    # Attempt reconnection after consecutive failures
+                    if self.consecutive_failures >= self.max_failures:
+                        print(f"\n⚠️ {self.consecutive_failures} consecutive frame failures. Attempting reconnection...")
+                        self._reconnect()
+                    
+                    # Return cached frame if available
+                    if self.last_frame is not None:
+                        return True, self.last_frame
+                    return False, None
+                    
             except Exception as e:
-                print(f"Error reading frame: {e}")
+                self.consecutive_failures += 1
+                print(f"❌ Error reading frame: {e}")
+                
+                # Attempt reconnection after consecutive failures
+                if self.consecutive_failures >= self.max_failures:
+                    print(f"\n⚠️ Connection issues detected. Attempting reconnection...")
+                    self._reconnect()
+                
                 # Return cached frame if available
-                return self.last_ret, self.last_frame
+                if self.last_frame is not None:
+                    return True, self.last_frame
+                return False, None
+    
+    def _reconnect(self):
+        """Internal method to reconnect to camera"""
+        try:
+            print(f"🔄 Reconnecting to camera...")
+            self.consecutive_failures = 0
+            
+            # Release existing connection
+            if self.cap is not None:
+                self.cap.release()
+            
+            time.sleep(self.reconnect_delay)
+            
+            # Attempt to reconnect
+            if isinstance(self.source, str) and self.source.startswith('rtsp'):
+                import os
+                os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp|fflags;nobuffer|flags;low_delay"
+                self.cap = cv2.VideoCapture(self.source, cv2.CAP_FFMPEG)
+                self.cap.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 10000)
+                self.cap.set(cv2.CAP_PROP_READ_TIMEOUT_MSEC, 10000)
+                self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            else:
+                self.cap = cv2.VideoCapture(self.source)
+            
+            if self.cap.isOpened():
+                # Test frame read
+                ret, test_frame = self.cap.read()
+                if ret:
+                    print(f"✅ Camera reconnected successfully!")
+                    self.is_open = True
+                else:
+                    print(f"⚠️ Camera opened but cannot read frames")
+            else:
+                print(f"⚠️ Failed to reconnect to camera")
+                self.is_open = False
+                
+        except Exception as e:
+            print(f"❌ Reconnection error: {e}")
+            self.is_open = False
     
     def release(self):
         """Release camera resources"""
