@@ -3,12 +3,13 @@ Camera Module - Handles video capture from device camera or IP camera
 """
 import cv2
 import time
+import threading
 from typing import Optional, Tuple
 import numpy as np
 
 
 class CameraCapture:
-    """Handles camera initialization and frame capture"""
+    """Handles camera initialization and frame capture with thread safety"""
     
     def __init__(self, source: int = 0, width: int = 640, height: int = 480):
         """
@@ -24,6 +25,9 @@ class CameraCapture:
         self.height = height
         self.cap = None
         self.is_open = False
+        self.lock = threading.Lock()  # Thread-safe frame reading
+        self.last_frame = None
+        self.last_ret = False
         
     def start(self) -> bool:
         """Initialize camera connection"""
@@ -32,10 +36,16 @@ class CameraCapture:
             
             # For RTSP streams, use CAP_FFMPEG backend with timeout
             if isinstance(self.source, str) and self.source.startswith('rtsp'):
+                # Set environment variable to prevent FFmpeg threading issues
+                import os
+                os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;udp|fflags;nobuffer|flags;low_delay"
+                
                 self.cap = cv2.VideoCapture(self.source, cv2.CAP_FFMPEG)
                 # Set connection timeout (in milliseconds)
                 self.cap.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 10000)
                 self.cap.set(cv2.CAP_PROP_READ_TIMEOUT_MSEC, 10000)
+                # Reduce buffering to prevent threading issues
+                self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             else:
                 self.cap = cv2.VideoCapture(self.source)
             
@@ -70,7 +80,7 @@ class CameraCapture:
     
     def read_frame(self) -> Tuple[bool, Optional[np.ndarray]]:
         """
-        Capture a single frame
+        Capture a single frame (thread-safe)
         
         Returns:
             Tuple of (success, frame)
@@ -78,8 +88,18 @@ class CameraCapture:
         if not self.is_open or self.cap is None:
             return False, None
         
-        ret, frame = self.cap.read()
-        return ret, frame
+        with self.lock:
+            try:
+                ret, frame = self.cap.read()
+                if ret:
+                    # Cache the last successful frame
+                    self.last_frame = frame.copy() if frame is not None else None
+                    self.last_ret = ret
+                return ret, frame
+            except Exception as e:
+                print(f"Error reading frame: {e}")
+                # Return cached frame if available
+                return self.last_ret, self.last_frame
     
     def release(self):
         """Release camera resources"""
