@@ -114,8 +114,11 @@ class EventDatabase:
         
         timestamp = datetime.now().isoformat()
         
-        # Parse bounding box
-        x1, y1, x2, y2 = bbox if bbox else (None, None, None, None)
+        # Parse bounding box (handle numpy arrays)
+        if bbox is not None and len(bbox) == 4:
+            x1, y1, x2, y2 = bbox
+        else:
+            x1, y1, x2, y2 = None, None, None, None
         
         # Convert metadata to JSON
         metadata_json = json.dumps(metadata) if metadata else None
