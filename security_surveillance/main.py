@@ -305,9 +305,12 @@ class SurveillanceSystem:
                 message=f"Person detected - {alerts_triggered} alerts triggered",
                 metadata={'alerts_count': alerts_triggered}
             )
-                    
-                    # Start recording
-                    if self.recorder:
+            
+            # Start recording if we have zone detections
+            if self.recorder:
+                for zone_name, zone_dets in zone_detections.items():
+                    if zone_dets:
+                        detection = zone_dets[0]  # Use first detection
                         filename = self.recorder.start_recording(
                             event_type=f'zone_{zone_name}',
                             metadata={'zone': zone_name, 'confidence': detection['confidence']}
@@ -320,9 +323,12 @@ class SurveillanceSystem:
                                 severity='info',
                                 message=f"Recording started: {filename}"
                             )
-                
-                # Behavioral learning
-                if self.behavior_learner:
+                        break  # Only start one recording
+        
+        # Behavioral learning
+        if self.behavior_learner:
+            for zone_name, zone_dets in zone_detections.items():
+                for detection in zone_dets:
                     self.behavior_learner.learn_detection(
                         zone_name=zone_name,
                         confidence=detection['confidence']
