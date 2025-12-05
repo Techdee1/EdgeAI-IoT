@@ -1,10 +1,10 @@
 # Security & Surveillance System Configuration
 
 camera:
-  source: 0  # 0 for device camera, or RTSP URL for IP camera
+  source: "rtsp://172.16.122.6:554/1"  # WiFi IP Camera RTSP stream (sub stream)
   width: 640
   height: 480
-  fps: 30
+  fps: 20  # Reduced from 30 for stability
 
 detection:
   model_path: "data/models/yolov8n.pt"

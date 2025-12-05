@@ -48,9 +48,13 @@ class SurveillanceSystem:
         # Initialize all components
         self._init_components()
         
-        # Setup signal handlers for graceful shutdown
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
+        # Set up signal handlers (only if in main thread)
+        try:
+            signal.signal(signal.SIGINT, self._signal_handler)
+            signal.signal(signal.SIGTERM, self._signal_handler)
+        except ValueError:
+            # Running in a thread, skip signal handlers
+            pass
         
         print("\n✅ System initialization complete!")
         print("=" * 70)

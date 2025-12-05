@@ -1,13 +1,13 @@
-# Security & Surveillance System
+# Security & Surveillance System with Web Dashboard
 
-**Edge AI-powered security system for Raspberry Pi 3**  
-Offline person detection with zone monitoring, tamper detection, and behavioral learning.
+**Edge AI-powered security + agriculture system for Raspberry Pi 3**  
+Offline person detection, zone monitoring, tamper detection, behavioral learning, and unified web dashboard.
 
 ---
 
 ## 🌟 Project Overview
 
-An intelligent security system that runs entirely on the edge (Raspberry Pi 3) without requiring cloud connectivity or internet access. Designed for privacy-conscious applications in remote areas, homes, and small businesses.
+An intelligent dual-mode system that runs entirely on the edge (Raspberry Pi 3) without requiring cloud connectivity. Features a professional web dashboard for real-time monitoring and control.
 
 ### Core Capabilities
 - 🎯 **Real-time Person Detection** - YOLOv8n optimized for Pi 3 (1-3 FPS)
@@ -15,34 +15,57 @@ An intelligent security system that runs entirely on the edge (Raspberry Pi 3) w
 - 🧠 **Behavioral Learning** - Learns normal activity patterns, alerts on anomalies
 - 🛡️ **Tamper Detection** - Detects camera covering or movement attempts
 - 📹 **Event Recording** - Automatic clip saving with timestamps
+- 🌐 **Web Dashboard** - FastAPI-powered real-time monitoring interface
+- 🌱 **Agriculture Mode** - Sensor monitoring and irrigation control
 - 🚫 **Privacy-First** - All processing local, no cloud/data upload
 - ⚡ **Motion Pre-Filter** - Efficient CPU usage through motion-triggered detection
 
+### ✨ New: Web Dashboard
+- 📊 **Dual-Mode Interface** - Security & Agriculture dashboards with mode switching
+- 📹 **Live Video Stream** - MJPEG streaming with quality control
+- 📈 **Real-time Charts** - Zone activity and sensor history visualizations
+- 🔔 **WebSocket Updates** - Live detection and sensor data streaming
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+- 🎨 **Professional UI** - Dark theme optimized for 24/7 monitoring
+- 🔗 **RESTful API** - 16 endpoints + 3 WebSocket channels
+
 ### Unique Features
-1. **Context-Aware Intelligence** - Knows what's normal vs suspicious based on time/location
-2. **Self-Protection** - Alerts if camera is tampered with
-3. **Zero Connectivity** - Works completely offline in remote areas
+1. **Unified Dashboard** - Single interface for security and agriculture systems
+2. **Context-Aware Intelligence** - Learns normal vs suspicious activity patterns
+3. **Self-Protection** - Alerts if camera is tampered with
+4. **Zero Connectivity Required** - Works completely offline in remote areas
 
 ---
 
 ## 📊 Development Progress
 
-**Status:** 🟢 Active Development  
-**Completion:** 3/30 core tasks (10%)
+**Status:** ✅ **DASHBOARD COMPLETE - READY FOR DEPLOYMENT**  
+**Overall Completion:** 25/30 tasks (83%)
 
 See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for detailed progress tracking.
 
 ### ✅ Completed
-- [x] Project structure and configuration
-- [x] Software dependencies installed
-- [x] Camera capture module (tested with simulation)
+- [x] Complete surveillance system (11 modules)
+- [x] Full system integration and testing
+- [x] Camera configuration (WiFi IP camera via RTSP)
+- [x] **Web Dashboard (15/15 tasks) - 100% Complete**
+  - [x] FastAPI backend with CORS
+  - [x] 8 Security API endpoints
+  - [x] 8 Agriculture API endpoints
+  - [x] 3 WebSocket channels
+  - [x] Video streaming (MJPEG)
+  - [x] HTML template with dual-mode UI
+  - [x] Professional CSS styling (850+ lines)
+  - [x] JavaScript logic (650+ lines)
+  - [x] Chart.js integration
+  - [x] System integration
+  - [x] Local testing verified
 
-### 🚧 Current Focus
-- [ ] YOLOv8n model download and preparation
-- [ ] Person detection pipeline
-
-### 📋 Upcoming
-- Motion detection, zone system, alerts, recording, unique features
+### 📋 Remaining
+- [ ] ESP32 sensor integration (MQTT)
+- [ ] Final Raspberry Pi testing
+- [ ] Documentation finalization
+- [ ] Demo video preparation
 
 ---
 

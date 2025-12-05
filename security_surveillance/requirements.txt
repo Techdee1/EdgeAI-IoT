@@ -4,3 +4,10 @@ ultralytics>=8.0.0
 pyyaml>=6.0
 torch>=2.0.0
 torchvision>=0.15.0
+
+# FastAPI Dashboard Dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+aiofiles>=23.2.1
+websockets>=12.0
