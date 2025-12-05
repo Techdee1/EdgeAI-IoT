@@ -28,22 +28,44 @@ class CameraCapture:
     def start(self) -> bool:
         """Initialize camera connection"""
         try:
-            self.cap = cv2.VideoCapture(self.source)
+            print(f"\n📹 Connecting to camera: {self.source}")
+            
+            # For RTSP streams, use CAP_FFMPEG backend with timeout
+            if isinstance(self.source, str) and self.source.startswith('rtsp'):
+                self.cap = cv2.VideoCapture(self.source, cv2.CAP_FFMPEG)
+                # Set connection timeout (in milliseconds)
+                self.cap.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 10000)
+                self.cap.set(cv2.CAP_PROP_READ_TIMEOUT_MSEC, 10000)
+            else:
+                self.cap = cv2.VideoCapture(self.source)
             
             if not self.cap.isOpened():
-                print(f"Error: Could not open camera source {self.source}")
+                print(f"❌ Error: Could not open camera source {self.source}")
+                print(f"   Please verify:")
+                print(f"   1. Camera is online and accessible")
+                print(f"   2. RTSP URL is correct")
+                print(f"   3. You're on the same network as the camera")
+                print(f"   4. No firewall blocking the connection")
                 return False
             
             # Set resolution
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
             
+            # Test read a frame to verify connection
+            ret, test_frame = self.cap.read()
+            if not ret:
+                print(f"❌ Error: Camera opened but cannot read frames")
+                self.cap.release()
+                return False
+            
             self.is_open = True
-            print(f"Camera initialized: {self.width}x{self.height}")
+            print(f"✅ Camera connected successfully: {self.width}x{self.height}")
+            print(f"   Actual frame size: {test_frame.shape[1]}x{test_frame.shape[0]}")
             return True
             
         except Exception as e:
-            print(f"Error starting camera: {e}")
+            print(f"❌ Error starting camera: {e}")
             return False
     
     def read_frame(self) -> Tuple[bool, Optional[np.ndarray]]:

@@ -275,10 +275,10 @@ async def video_stream(request: Request, quality: str = "medium"):
             """Generator function for MJPEG stream"""
             try:
                 while True:
-                    # Get frame from camera
-                    frame = app_state.camera.read_frame()
+                    # Get frame from camera (returns tuple: success, frame)
+                    ret, frame = app_state.camera.read_frame()
                     
-                    if frame is None:
+                    if not ret or frame is None:
                         # Camera not providing frames, send error frame
                         error_frame = create_error_frame("Camera Unavailable")
                         _, buffer = cv2.imencode('.jpg', error_frame, 

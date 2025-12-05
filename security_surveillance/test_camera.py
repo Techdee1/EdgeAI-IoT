@@ -7,16 +7,30 @@ sys.path.insert(0, '/workspaces/EdgeAI-IoT/security_surveillance')
 from modules.camera import CameraCapture
 import cv2
 import os
+import yaml
 
 def test_camera():
     """Test camera capture and save sample frames"""
     print("Testing camera capture (headless mode)...")
     print("Will capture 10 frames and save a test image...")
     
+    # Load configuration
+    with open('config/config.yaml', 'r') as f:
+        config = yaml.safe_load(f)
+    
+    camera_source = config['camera'].get('source', 0)
+    camera_width = config['camera'].get('width', 640)
+    camera_height = config['camera'].get('height', 480)
+    
+    print(f"\n📹 Camera Configuration:")
+    print(f"   Source: {camera_source}")
+    print(f"   Resolution: {camera_width}x{camera_height}")
+    print()
+    
     # Create test output directory
     os.makedirs('data/test_output', exist_ok=True)
     
-    with CameraCapture(source=0, width=640, height=480) as camera:
+    with CameraCapture(source=camera_source, width=camera_width, height=camera_height) as camera:
         if not camera.is_open:
             print("❌ Failed to open camera!")
             print("Note: Running in a dev container without camera access.")
