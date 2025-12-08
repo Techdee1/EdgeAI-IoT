@@ -1,0 +1,1115 @@
+{
+  "Apple___Apple_scab": {
+    "disease_name": "Apple Scab",
+    "crop": "Apple",
+    "severity": "moderate",
+    "symptoms": [
+      "Olive-green to brown spots on leaves",
+      "Velvety lesions on fruit surface",
+      "Premature leaf drop",
+      "Cracked and distorted fruit"
+    ],
+    "causes": [
+      "Fungus Venturia inaequalis",
+      "Spreads in cool, wet spring weather",
+      "Overwintered spores on fallen leaves"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected leaves",
+      "Apply neem oil spray weekly",
+      "Use copper-based fungicides",
+      "Improve air circulation by pruning"
+    ],
+    "chemical_treatment": [
+      "Apply captan fungicide at bud break",
+      "Use myclobutanil during growing season",
+      "Spray mancozeb every 7-10 days in wet weather"
+    ],
+    "prevention": [
+      "Plant resistant varieties (Liberty, Freedom, Enterprise)",
+      "Rake and remove fallen leaves in autumn",
+      "Avoid overhead watering",
+      "Space trees for good air circulation",
+      "Apply preventive fungicides before symptoms appear"
+    ]
+  },
+  "Apple___Black_rot": {
+    "disease_name": "Black Rot",
+    "crop": "Apple",
+    "severity": "high",
+    "symptoms": [
+      "Purple spots on leaves with distinct borders",
+      "Black, sunken cankers on fruit",
+      "Mummified fruit remains on tree",
+      "Wilted, brown leaves"
+    ],
+    "causes": [
+      "Fungus Botryosphaeria obtusa",
+      "Spreads during warm, humid weather",
+      "Enters through wounds and natural openings"
+    ],
+    "organic_treatment": [
+      "Prune infected branches 8-12 inches below visible damage",
+      "Remove all mummified fruit",
+      "Apply copper sulfate solution",
+      "Use biological fungicides (Bacillus subtilis)"
+    ],
+    "chemical_treatment": [
+      "Apply captan or ziram during bloom",
+      "Use thiophanate-methyl after petal fall",
+      "Spray myclobutanil every 10-14 days"
+    ],
+    "prevention": [
+      "Remove all dead wood and cankers during winter pruning",
+      "Maintain tree vigor with proper fertilization",
+      "Avoid wounding trees during cultivation",
+      "Clear fallen leaves and fruit debris"
+    ]
+  },
+  "Apple___Cedar_apple_rust": {
+    "disease_name": "Cedar Apple Rust",
+    "crop": "Apple",
+    "severity": "moderate",
+    "symptoms": [
+      "Bright orange-yellow spots on upper leaf surface",
+      "Small clusters of tube-like structures on leaf undersides",
+      "Premature leaf drop",
+      "Reduced fruit quality"
+    ],
+    "causes": [
+      "Fungus Gymnosporangium juniperi-virginianae",
+      "Requires both apple and cedar/juniper trees",
+      "Spores travel up to 2 miles from cedar hosts"
+    ],
+    "organic_treatment": [
+      "Remove nearby cedar/juniper trees if possible",
+      "Apply sulfur-based fungicides",
+      "Use neem oil during early infection",
+      "Pick off infected leaves"
+    ],
+    "chemical_treatment": [
+      "Apply myclobutanil at pink bud stage",
+      "Use propiconazole every 7-10 days",
+      "Spray mancozeb during wet periods"
+    ],
+    "prevention": [
+      "Plant resistant varieties (Freedom, Liberty, Redfree)",
+      "Remove cedar/juniper trees within 2 miles",
+      "Apply preventive fungicides before spore release",
+      "Avoid planting apples near junipers"
+    ]
+  },
+  "Apple___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Apple",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Maintain regular pruning schedule",
+      "Ensure adequate spacing for air circulation",
+      "Water at soil level, avoid wetting foliage",
+      "Monitor regularly for early disease signs",
+      "Keep orchard floor clean of debris"
+    ]
+  },
+  "Blueberry___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Blueberry",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Maintain acidic soil pH (4.5-5.5)",
+      "Mulch with pine bark or sawdust",
+      "Prune old canes annually",
+      "Ensure good drainage",
+      "Use drip irrigation to keep leaves dry"
+    ]
+  },
+  "Cherry_(including_sour)___Powdery_mildew": {
+    "disease_name": "Powdery Mildew",
+    "crop": "Cherry",
+    "severity": "moderate",
+    "symptoms": [
+      "White powdery coating on leaves and shoots",
+      "Curled and distorted young leaves",
+      "Stunted shoot growth",
+      "Reduced fruit quality"
+    ],
+    "causes": [
+      "Fungus Podosphaera clandestina",
+      "Thrives in warm, dry days and cool nights",
+      "Spreads rapidly in dense canopies"
+    ],
+    "organic_treatment": [
+      "Apply sulfur spray at first sign",
+      "Use baking soda solution (1 tbsp per gallon)",
+      "Spray potassium bicarbonate weekly",
+      "Prune infected shoots"
+    ],
+    "chemical_treatment": [
+      "Apply myclobutanil every 14 days",
+      "Use propiconazole during early infection",
+      "Spray tebuconazole preventively"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Prune for good air circulation",
+      "Avoid excess nitrogen fertilization",
+      "Remove infected plant material promptly",
+      "Apply preventive sulfur sprays"
+    ]
+  },
+  "Cherry_(including_sour)___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Cherry",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Prune during dry weather to prevent infections",
+      "Remove fallen fruit and leaves",
+      "Maintain tree vigor with balanced fertilization",
+      "Use bird netting to protect fruit",
+      "Ensure proper drainage around trees"
+    ]
+  },
+  "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+    "disease_name": "Gray Leaf Spot",
+    "crop": "Corn",
+    "severity": "high",
+    "symptoms": [
+      "Rectangular gray to tan lesions on leaves",
+      "Lesions parallel to leaf veins",
+      "Severe defoliation in susceptible hybrids",
+      "Reduced grain fill and yield"
+    ],
+    "causes": [
+      "Fungus Cercospora zeae-maydis",
+      "Favored by warm, humid weather",
+      "Survives on corn residue"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected plant debris",
+      "Apply copper-based fungicides",
+      "Use compost tea sprays",
+      "Improve field drainage"
+    ],
+    "chemical_treatment": [
+      "Apply azoxystrobin at first symptoms",
+      "Use pyraclostrobin + metconazole",
+      "Spray trifloxystrobin for severe infections"
+    ],
+    "prevention": [
+      "Plant resistant hybrids",
+      "Rotate crops with non-host plants for 2 years",
+      "Till under crop residue after harvest",
+      "Avoid overhead irrigation",
+      "Use wider row spacing"
+    ]
+  },
+  "Corn_(maize)___Common_rust_": {
+    "disease_name": "Common Rust",
+    "crop": "Corn",
+    "severity": "moderate",
+    "symptoms": [
+      "Small, circular to elongated reddish-brown pustules",
+      "Pustules on both leaf surfaces",
+      "Severe infections cause leaf yellowing",
+      "Premature leaf death"
+    ],
+    "causes": [
+      "Fungus Puccinia sorghi",
+      "Spreads by wind-borne spores",
+      "Favored by moderate temperatures (60-75°F)"
+    ],
+    "organic_treatment": [
+      "Apply sulfur dust at early signs",
+      "Use neem oil spray weekly",
+      "Remove heavily infected plants",
+      "Increase plant spacing"
+    ],
+    "chemical_treatment": [
+      "Apply azoxystrobin at tasseling",
+      "Use propiconazole for severe outbreaks",
+      "Spray triazole fungicides preventively"
+    ],
+    "prevention": [
+      "Plant resistant hybrids",
+      "Plant early to avoid peak spore season",
+      "Scout fields regularly",
+      "Maintain adequate plant nutrition",
+      "Use fungicide seed treatments"
+    ]
+  },
+  "Corn_(maize)___Northern_Leaf_Blight": {
+    "disease_name": "Northern Leaf Blight",
+    "crop": "Corn",
+    "severity": "high",
+    "symptoms": [
+      "Long, cigar-shaped gray-green lesions",
+      "Lesions expand and turn tan with distinct borders",
+      "Severe defoliation reduces yield",
+      "Lesions may girdle leaves"
+    ],
+    "causes": [
+      "Fungus Exserohilum turcicum",
+      "Favored by moderate temperatures and high humidity",
+      "Survives on corn residue"
+    ],
+    "organic_treatment": [
+      "Remove infected plant material",
+      "Apply Bacillus subtilis spray",
+      "Use copper fungicides",
+      "Improve air circulation"
+    ],
+    "chemical_treatment": [
+      "Apply azoxystrobin + propiconazole",
+      "Use pyraclostrobin at tasseling",
+      "Spray mancozeb for early protection"
+    ],
+    "prevention": [
+      "Plant resistant hybrids",
+      "Rotate with non-host crops for 1-2 years",
+      "Till crop residue into soil",
+      "Maintain balanced fertility",
+      "Scout and apply fungicides early"
+    ]
+  },
+  "Corn_(maize)___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Corn",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Use certified disease-free seed",
+      "Practice crop rotation",
+      "Maintain optimal plant population",
+      "Ensure adequate soil fertility",
+      "Control weeds to reduce humidity"
+    ]
+  },
+  "Grape___Black_rot": {
+    "disease_name": "Black Rot",
+    "crop": "Grape",
+    "severity": "high",
+    "symptoms": [
+      "Small tan spots with dark borders on leaves",
+      "Black, shriveled mummified berries",
+      "Circular lesions on shoots and tendrils",
+      "Severe fruit loss"
+    ],
+    "causes": [
+      "Fungus Guignardia bidwellii",
+      "Spreads during warm, wet weather",
+      "Overwinters in mummified fruit and canes"
+    ],
+    "organic_treatment": [
+      "Remove all mummified fruit from vines and ground",
+      "Apply lime sulfur during dormancy",
+      "Use copper fungicides pre-bloom",
+      "Prune to improve air circulation"
+    ],
+    "chemical_treatment": [
+      "Apply mancozeb from bud break to bloom",
+      "Use myclobutanil during fruit development",
+      "Spray captan every 10-14 days in wet weather"
+    ],
+    "prevention": [
+      "Remove mummified fruit during winter pruning",
+      "Maintain open canopy through pruning",
+      "Avoid overhead irrigation",
+      "Apply preventive fungicides before rain",
+      "Plant resistant varieties where available"
+    ]
+  },
+  "Grape___Esca_(Black_Measles)": {
+    "disease_name": "Esca (Black Measles)",
+    "crop": "Grape",
+    "severity": "high",
+    "symptoms": [
+      "Tiger-stripe pattern on leaves (yellow and green bands)",
+      "Dark streaking in wood of mature vines",
+      "Sudden vine collapse (apoplexy)",
+      "Black spots on berries"
+    ],
+    "causes": [
+      "Complex of fungi including Phaeomoniella and Phaeoacremonium",
+      "Enters through pruning wounds",
+      "More common in older vines (>7 years)"
+    ],
+    "organic_treatment": [
+      "No effective cure - remove severely infected vines",
+      "Prune during dry weather",
+      "Apply wound protectants after pruning",
+      "Maintain vine health with proper nutrition"
+    ],
+    "chemical_treatment": [
+      "Apply Topsin-M paste to pruning wounds",
+      "Use triazole fungicides (limited effectiveness)",
+      "Trunk injection of tebuconazole (experimental)"
+    ],
+    "prevention": [
+      "Prune during cold, dry weather",
+      "Use sharp, sanitized tools",
+      "Apply wound protectants immediately after pruning",
+      "Avoid large pruning wounds",
+      "Maintain balanced vine nutrition"
+    ]
+  },
+  "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": {
+    "disease_name": "Leaf Blight",
+    "crop": "Grape",
+    "severity": "moderate",
+    "symptoms": [
+      "Circular to angular brown spots on leaves",
+      "Spots may have yellow halos",
+      "Premature defoliation",
+      "Reduced fruit quality and ripening"
+    ],
+    "causes": [
+      "Fungus Pseudocercospora vitis",
+      "Favored by warm, humid conditions",
+      "Spreads through rain splash"
+    ],
+    "organic_treatment": [
+      "Remove infected leaves",
+      "Apply copper fungicides",
+      "Use sulfur dust",
+      "Improve canopy ventilation"
+    ],
+    "chemical_treatment": [
+      "Apply mancozeb at 14-day intervals",
+      "Use azoxystrobin for severe infections",
+      "Spray chlorothalonil preventively"
+    ],
+    "prevention": [
+      "Prune for open canopy structure",
+      "Avoid excessive nitrogen fertilization",
+      "Remove leaf debris from vineyard floor",
+      "Use drip irrigation instead of overhead",
+      "Scout regularly and treat early"
+    ]
+  },
+  "Grape___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Grape",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Maintain balanced canopy through pruning and training",
+      "Ensure adequate air circulation",
+      "Remove excess shoots and leaves",
+      "Monitor for pests and diseases regularly",
+      "Practice proper vineyard sanitation"
+    ]
+  },
+  "Orange___Haunglongbing_(Citrus_greening)": {
+    "disease_name": "Huanglongbing (Citrus Greening)",
+    "crop": "Orange",
+    "severity": "critical",
+    "symptoms": [
+      "Yellow shoots and asymmetric leaf mottling",
+      "Small, lopsided fruit with green ends",
+      "Bitter, unusable fruit",
+      "Premature fruit drop",
+      "Tree decline and death within years"
+    ],
+    "causes": [
+      "Bacterial pathogen Candidatus Liberibacter",
+      "Transmitted by Asian citrus psyllid insect",
+      "No cure once infected"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected trees immediately",
+      "Control psyllid populations with neem oil",
+      "Use kaolin clay to deter psyllids",
+      "Maintain tree health with proper nutrition"
+    ],
+    "chemical_treatment": [
+      "Spray imidacloprid for psyllid control",
+      "Apply systemic insecticides (thiamethoxam)",
+      "Use foliar nutritional sprays to support trees",
+      "No effective chemical cure for the disease"
+    ],
+    "prevention": [
+      "Scout for Asian citrus psyllid weekly",
+      "Remove infected trees immediately",
+      "Plant only certified disease-free nursery stock",
+      "Control psyllid populations aggressively",
+      "Use insect exclusion netting in nurseries",
+      "Report suspected cases to agricultural authorities"
+    ]
+  },
+  "Peach___Bacterial_spot": {
+    "disease_name": "Bacterial Spot",
+    "crop": "Peach",
+    "severity": "moderate",
+    "symptoms": [
+      "Small purple spots on leaves that turn brown",
+      "Leaf drop and defoliation",
+      "Sunken, dark lesions on fruit",
+      "Reduced fruit quality and marketability"
+    ],
+    "causes": [
+      "Bacterium Xanthomonas arboricola pv. pruni",
+      "Spreads through rain splash and wind",
+      "Overwinters in lesions on twigs"
+    ],
+    "organic_treatment": [
+      "Apply copper sprays during dormancy",
+      "Use Bacillus subtilis spray",
+      "Remove infected twigs during winter pruning",
+      "Improve air circulation through pruning"
+    ],
+    "chemical_treatment": [
+      "Apply copper-based bactericides",
+      "Use oxytetracycline during bloom",
+      "Spray streptomycin (where permitted)",
+      "Apply preventively before rain events"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Prune to improve air circulation",
+      "Avoid overhead irrigation",
+      "Apply copper sprays in fall after leaf drop",
+      "Remove and destroy infected plant material"
+    ]
+  },
+  "Peach___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Peach",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Prune annually for open center structure",
+      "Thin fruit to 6-8 inches apart",
+      "Maintain proper fertilization",
+      "Water deeply but infrequently",
+      "Remove fallen fruit and leaves"
+    ]
+  },
+  "Pepper,_bell___Bacterial_spot": {
+    "disease_name": "Bacterial Spot",
+    "crop": "Bell Pepper",
+    "severity": "high",
+    "symptoms": [
+      "Small water-soaked spots on leaves",
+      "Spots turn brown with yellow halos",
+      "Raised, scabby lesions on fruit",
+      "Severe defoliation and yield loss"
+    ],
+    "causes": [
+      "Bacterium Xanthomonas euvesicatoria",
+      "Spreads through water splash and contaminated tools",
+      "Seed-borne pathogen"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected plants",
+      "Apply copper-based sprays",
+      "Use biological controls (Bacillus subtilis)",
+      "Avoid working with wet plants"
+    ],
+    "chemical_treatment": [
+      "Apply copper hydroxide weekly",
+      "Use streptomycin (where permitted)",
+      "Spray acibenzolar-S-methyl for plant resistance",
+      "Alternate copper with mancozeb"
+    ],
+    "prevention": [
+      "Use certified disease-free seed",
+      "Plant resistant varieties",
+      "Rotate with non-host crops for 2 years",
+      "Use drip irrigation instead of overhead",
+      "Sanitize tools between uses",
+      "Avoid working in wet fields"
+    ]
+  },
+  "Pepper,_bell___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Bell Pepper",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Maintain consistent soil moisture",
+      "Mulch to suppress weeds and retain moisture",
+      "Support plants with stakes or cages",
+      "Monitor for pests regularly",
+      "Ensure adequate calcium to prevent blossom end rot"
+    ]
+  },
+  "Potato___Early_blight": {
+    "disease_name": "Early Blight",
+    "crop": "Potato",
+    "severity": "moderate",
+    "symptoms": [
+      "Dark brown spots with concentric rings (target pattern)",
+      "Lower leaves affected first",
+      "Lesions on stems and tubers",
+      "Premature defoliation"
+    ],
+    "causes": [
+      "Fungus Alternaria solani",
+      "Favored by warm, humid weather",
+      "Spreads through rain splash"
+    ],
+    "organic_treatment": [
+      "Apply copper fungicides at first signs",
+      "Use Bacillus subtilis spray",
+      "Remove infected lower leaves",
+      "Improve air circulation"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil every 7-10 days",
+      "Use azoxystrobin + difenoconazole",
+      "Spray mancozeb preventively"
+    ],
+    "prevention": [
+      "Plant certified disease-free seed potatoes",
+      "Rotate crops with non-Solanaceae for 3 years",
+      "Maintain adequate plant spacing",
+      "Avoid overhead irrigation",
+      "Hill soil around plants to protect tubers",
+      "Apply mulch to prevent soil splash"
+    ]
+  },
+  "Potato___Late_blight": {
+    "disease_name": "Late Blight",
+    "crop": "Potato",
+    "severity": "critical",
+    "symptoms": [
+      "Water-soaked spots on leaves that turn brown",
+      "White fuzzy growth on leaf undersides",
+      "Rapid spread destroying entire fields",
+      "Dark brown lesions on tubers",
+      "Secondary rot of stored potatoes"
+    ],
+    "causes": [
+      "Oomycete Phytophthora infestans (not a true fungus)",
+      "Spreads extremely rapidly in cool, wet weather",
+      "Can destroy crops within days",
+      "Famous cause of Irish Potato Famine"
+    ],
+    "organic_treatment": [
+      "Remove infected plants immediately",
+      "Apply copper fungicides preventively",
+      "Use biological controls (limited effectiveness)",
+      "Destroy cull piles completely"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil or mancozeb preventively",
+      "Use cymoxanil + mancozeb at first warning",
+      "Spray fluazinam for severe outbreaks",
+      "Apply fungicides before rain events",
+      "Use protective fungicides every 5-7 days"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Use certified disease-free seed potatoes",
+      "Monitor weather and apply preventive sprays",
+      "Destroy volunteer potatoes and cull piles",
+      "Kill vines 2 weeks before harvest",
+      "Avoid irrigation during high-risk periods",
+      "Join local late blight monitoring networks"
+    ]
+  },
+  "Potato___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Potato",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Use certified seed potatoes",
+      "Hill soil properly to prevent greening",
+      "Maintain consistent soil moisture",
+      "Practice 3-4 year crop rotation",
+      "Monitor for Colorado potato beetle"
+    ]
+  },
+  "Raspberry___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Raspberry",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Remove fruiting canes after harvest",
+      "Thin new canes to 4-6 per foot",
+      "Mulch with organic matter",
+      "Ensure good drainage",
+      "Water at soil level to keep leaves dry"
+    ]
+  },
+  "Soybean___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Soybean",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Use certified disease-free seed",
+      "Rotate with corn or small grains",
+      "Maintain proper plant population",
+      "Scout for pests and diseases regularly",
+      "Till crop residue to reduce overwintering pathogens"
+    ]
+  },
+  "Squash___Powdery_mildew": {
+    "disease_name": "Powdery Mildew",
+    "crop": "Squash",
+    "severity": "moderate",
+    "symptoms": [
+      "White powdery spots on upper leaf surfaces",
+      "Spots enlarge and cover entire leaf",
+      "Yellow, wilted leaves",
+      "Reduced fruit quality and yield"
+    ],
+    "causes": [
+      "Fungus Podosphaera xanthii",
+      "Thrives in warm, dry weather",
+      "Spreads by wind-borne spores"
+    ],
+    "organic_treatment": [
+      "Apply sulfur dust or spray",
+      "Use baking soda solution (1 tbsp per gallon)",
+      "Spray neem oil weekly",
+      "Apply milk spray (1 part milk to 9 parts water)"
+    ],
+    "chemical_treatment": [
+      "Apply myclobutanil at first signs",
+      "Use potassium bicarbonate sprays",
+      "Spray azoxystrobin for severe infections"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Provide adequate spacing for air circulation",
+      "Avoid overhead watering",
+      "Remove infected leaves promptly",
+      "Apply preventive sulfur sprays",
+      "Plant in full sun locations"
+    ]
+  },
+  "Strawberry___Leaf_scorch": {
+    "disease_name": "Leaf Scorch",
+    "crop": "Strawberry",
+    "severity": "moderate",
+    "symptoms": [
+      "Small purple spots on leaves",
+      "Spots enlarge with tan centers and purple borders",
+      "Leaves appear scorched or burned",
+      "Reduced plant vigor and yield"
+    ],
+    "causes": [
+      "Fungus Diplocarpon earlianum",
+      "Spreads during warm, wet weather",
+      "Overwinters on infected leaves"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected leaves",
+      "Apply copper fungicides",
+      "Use neem oil spray",
+      "Improve air circulation by thinning plants"
+    ],
+    "chemical_treatment": [
+      "Apply captan during bloom and after harvest",
+      "Use myclobutanil for severe infections",
+      "Spray mancozeb preventively"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Remove old leaves after harvest",
+      "Avoid overhead irrigation",
+      "Space plants for good air circulation",
+      "Renovate beds annually",
+      "Apply preventive fungicides in spring"
+    ]
+  },
+  "Strawberry___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Strawberry",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Use certified disease-free plants",
+      "Mulch with straw to keep fruit clean",
+      "Remove runners to maintain plant vigor",
+      "Water at soil level early in day",
+      "Renovate beds after harvest by mowing and thinning"
+    ]
+  },
+  "Tomato___Bacterial_spot": {
+    "disease_name": "Bacterial Spot",
+    "crop": "Tomato",
+    "severity": "high",
+    "symptoms": [
+      "Small dark spots with yellow halos on leaves",
+      "Raised brown lesions on stems and fruit",
+      "Severe defoliation",
+      "Reduced fruit quality and marketability"
+    ],
+    "causes": [
+      "Bacterium Xanthomonas spp.",
+      "Spreads through water splash and contaminated tools",
+      "Seed-borne pathogen"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected plants",
+      "Apply copper-based sprays weekly",
+      "Use Bacillus subtilis biological control",
+      "Avoid handling wet plants"
+    ],
+    "chemical_treatment": [
+      "Apply copper hydroxide + mancozeb",
+      "Use streptomycin (where permitted)",
+      "Spray acibenzolar-S-methyl to induce plant resistance"
+    ],
+    "prevention": [
+      "Use certified disease-free seed and transplants",
+      "Rotate with non-Solanaceae crops for 2-3 years",
+      "Use drip irrigation, avoid overhead watering",
+      "Sanitize tools between plants",
+      "Stake and prune for better air circulation",
+      "Mulch to prevent soil splash"
+    ]
+  },
+  "Tomato___Early_blight": {
+    "disease_name": "Early Blight",
+    "crop": "Tomato",
+    "severity": "moderate",
+    "symptoms": [
+      "Dark brown spots with concentric rings on lower leaves",
+      "Progressive upward movement of disease",
+      "Stem lesions and fruit rot",
+      "Premature leaf drop"
+    ],
+    "causes": [
+      "Fungus Alternaria solani",
+      "Favored by warm temperatures and high humidity",
+      "Spreads through rain splash and wind"
+    ],
+    "organic_treatment": [
+      "Remove infected lower leaves",
+      "Apply copper fungicides",
+      "Use Bacillus subtilis spray",
+      "Improve air circulation through pruning"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil every 7-10 days",
+      "Use azoxystrobin + difenoconazole",
+      "Spray mancozeb preventively"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Rotate crops with non-Solanaceae for 3 years",
+      "Mulch to prevent soil splash",
+      "Stake and prune for air circulation",
+      "Water at soil level in morning",
+      "Remove plant debris at season end"
+    ]
+  },
+  "Tomato___Late_blight": {
+    "disease_name": "Late Blight",
+    "crop": "Tomato",
+    "severity": "critical",
+    "symptoms": [
+      "Large water-soaked spots on leaves",
+      "White fuzzy growth on leaf undersides",
+      "Rapid plant collapse in wet weather",
+      "Dark, firm lesions on green fruit",
+      "Can destroy entire planting within days"
+    ],
+    "causes": [
+      "Oomycete Phytophthora infestans",
+      "Spreads explosively in cool, wet weather",
+      "Same pathogen as potato late blight"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected plants immediately",
+      "Apply copper fungicides preventively",
+      "Do not compost infected material",
+      "Monitor weather for favorable conditions"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil or mancozeb preventively",
+      "Use cymoxanil + mancozeb at high risk periods",
+      "Spray every 5-7 days during wet weather",
+      "Apply before rain events"
+    ],
+    "prevention": [
+      "Plant resistant varieties",
+      "Provide wide spacing for air circulation",
+      "Avoid overhead irrigation",
+      "Monitor local late blight alerts",
+      "Apply preventive fungicides before symptoms",
+      "Remove volunteer tomatoes and potatoes",
+      "Don't plant near potatoes"
+    ]
+  },
+  "Tomato___Leaf_Mold": {
+    "disease_name": "Leaf Mold",
+    "crop": "Tomato",
+    "severity": "moderate",
+    "symptoms": [
+      "Pale yellow spots on upper leaf surfaces",
+      "Olive-green to brown fuzzy growth on undersides",
+      "Leaves curl, wither and drop",
+      "Most common in greenhouse tomatoes"
+    ],
+    "causes": [
+      "Fungus Passalora fulva (formerly Cladosporium fulvum)",
+      "Thrives in high humidity (>85%)",
+      "Poor air circulation increases severity"
+    ],
+    "organic_treatment": [
+      "Remove infected leaves immediately",
+      "Improve ventilation and reduce humidity",
+      "Apply sulfur or copper sprays",
+      "Use baking soda solution"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil at first signs",
+      "Use azoxystrobin for greenhouse production",
+      "Spray mancozeb preventively"
+    ],
+    "prevention": [
+      "Plant resistant varieties (most modern hybrids)",
+      "Provide excellent air circulation",
+      "Reduce humidity in greenhouses",
+      "Space plants adequately",
+      "Prune lower leaves",
+      "Avoid overhead watering",
+      "Heat and ventilate greenhouses properly"
+    ]
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "disease_name": "Septoria Leaf Spot",
+    "crop": "Tomato",
+    "severity": "moderate",
+    "symptoms": [
+      "Numerous small circular spots on leaves",
+      "Spots have gray/tan centers with dark borders",
+      "Tiny black dots (pycnidia) visible in spot centers",
+      "Severe defoliation from bottom up"
+    ],
+    "causes": [
+      "Fungus Septoria lycopersici",
+      "Spreads through rain splash",
+      "Overwinters on plant debris and weeds"
+    ],
+    "organic_treatment": [
+      "Remove infected lower leaves",
+      "Apply copper fungicides weekly",
+      "Use neem oil spray",
+      "Mulch to prevent soil splash"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil every 7-10 days",
+      "Use mancozeb preventively",
+      "Spray copper + mancozeb combination"
+    ],
+    "prevention": [
+      "Rotate with non-Solanaceae for 3 years",
+      "Stake and prune plants for air circulation",
+      "Mulch to prevent soil splash onto leaves",
+      "Water at soil level, avoid wetting foliage",
+      "Remove plant debris at season end",
+      "Control weeds in nightshade family"
+    ]
+  },
+  "Tomato___Spider_mites Two-spotted_spider_mite": {
+    "disease_name": "Spider Mites (Two-spotted)",
+    "crop": "Tomato",
+    "severity": "moderate",
+    "symptoms": [
+      "Stippling (tiny white/yellow dots) on leaves",
+      "Fine webbing on undersides of leaves",
+      "Bronzing or yellowing of leaves",
+      "Leaf drop in severe infestations",
+      "Reduced fruit production"
+    ],
+    "causes": [
+      "Pest: Tetranychus urticae (not a disease)",
+      "Hot, dry weather favors population explosions",
+      "More severe where natural enemies are lacking"
+    ],
+    "organic_treatment": [
+      "Spray plants with strong water stream",
+      "Apply neem oil or insecticidal soap",
+      "Release predatory mites (Phytoseiulus persimilis)",
+      "Use sulfur dust (not above 90°F)"
+    ],
+    "chemical_treatment": [
+      "Apply abamectin for severe infestations",
+      "Use bifenazate miticide",
+      "Spray spiromesifen or etoxazole",
+      "Rotate miticide classes to prevent resistance"
+    ],
+    "prevention": [
+      "Maintain adequate soil moisture",
+      "Avoid water stress during hot weather",
+      "Encourage beneficial insects",
+      "Remove heavily infested plants",
+      "Keep area weed-free",
+      "Scout regularly, especially in hot weather",
+      "Avoid broad-spectrum insecticides that kill predators"
+    ]
+  },
+  "Tomato___Target_Spot": {
+    "disease_name": "Target Spot",
+    "crop": "Tomato",
+    "severity": "moderate",
+    "symptoms": [
+      "Brown spots with concentric rings on leaves",
+      "Lesions on stems and fruit",
+      "Defoliation starting from lower leaves",
+      "Reduced yield and fruit quality"
+    ],
+    "causes": [
+      "Fungus Corynespora cassiicola",
+      "Favored by warm, humid conditions",
+      "Spreads through rain splash and wind"
+    ],
+    "organic_treatment": [
+      "Remove infected plant material",
+      "Apply copper-based fungicides",
+      "Use Bacillus subtilis spray",
+      "Improve air circulation"
+    ],
+    "chemical_treatment": [
+      "Apply chlorothalonil every 7-14 days",
+      "Use azoxystrobin + difenoconazole",
+      "Spray mancozeb or copper + mancozeb"
+    ],
+    "prevention": [
+      "Plant resistant varieties where available",
+      "Rotate with non-host crops",
+      "Provide adequate plant spacing",
+      "Mulch to reduce soil splash",
+      "Water at soil level",
+      "Remove crop debris after harvest",
+      "Apply preventive fungicides in humid climates"
+    ]
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "disease_name": "Tomato Yellow Leaf Curl Virus",
+    "crop": "Tomato",
+    "severity": "high",
+    "symptoms": [
+      "Upward curling and yellowing of leaves",
+      "Stunted plant growth",
+      "Flower drop and little to no fruit production",
+      "Plant remains green but unproductive"
+    ],
+    "causes": [
+      "Virus transmitted by whiteflies (Bemisia tabaci)",
+      "No cure once plants are infected",
+      "Spreads rapidly in warm climates"
+    ],
+    "organic_treatment": [
+      "Remove and destroy infected plants immediately",
+      "Control whiteflies with insecticidal soap",
+      "Use yellow sticky traps",
+      "Apply neem oil to deter whiteflies"
+    ],
+    "chemical_treatment": [
+      "Apply imidacloprid as soil drench at transplanting",
+      "Use spirotetramat for whitefly control",
+      "Spray pymetrozine to reduce virus transmission",
+      "No chemical cure for virus itself"
+    ],
+    "prevention": [
+      "Plant virus-resistant varieties (highly recommended)",
+      "Use insect-proof netting in high-risk areas",
+      "Control whiteflies aggressively",
+      "Remove infected plants immediately",
+      "Avoid planting near previous infected areas",
+      "Use reflective mulches to repel whiteflies",
+      "Plant trap crops away from tomatoes"
+    ]
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "disease_name": "Tomato Mosaic Virus",
+    "crop": "Tomato",
+    "severity": "high",
+    "symptoms": [
+      "Mottled light and dark green mosaic pattern on leaves",
+      "Distorted, fern-like leaves",
+      "Stunted plant growth",
+      "Reduced fruit set and mottled fruit",
+      "Internal browning of fruit"
+    ],
+    "causes": [
+      "Virus transmitted mechanically (hands, tools, plant contact)",
+      "Very stable virus, survives on surfaces for months",
+      "Can be seed-borne",
+      "Tobacco users can spread virus"
+    ],
+    "organic_treatment": [
+      "No treatment available",
+      "Remove and destroy infected plants",
+      "Do not compost infected plants",
+      "Sanitize all tools and surfaces with 10% bleach"
+    ],
+    "chemical_treatment": [
+      "No chemical treatment available",
+      "Focus on prevention and sanitation"
+    ],
+    "prevention": [
+      "Plant resistant varieties (Tm-2 gene)",
+      "Use certified virus-free seed and transplants",
+      "Wash hands with soap before handling plants",
+      "Sanitize tools with 10% bleach solution",
+      "Control aphids which can transmit related viruses",
+      "Tobacco users should wash hands and change clothes",
+      "Remove infected plants immediately",
+      "Don't save seed from infected plants"
+    ]
+  },
+  "Tomato___healthy": {
+    "disease_name": "Healthy",
+    "crop": "Tomato",
+    "severity": "none",
+    "symptoms": [],
+    "causes": [],
+    "organic_treatment": [],
+    "chemical_treatment": [],
+    "prevention": [
+      "Rotate planting location annually",
+      "Stake or cage plants for support and air flow",
+      "Prune suckers and lower leaves",
+      "Mulch to conserve moisture and suppress weeds",
+      "Water deeply at soil level, avoid wetting leaves",
+      "Monitor regularly for early signs of problems",
+      "Maintain consistent watering to prevent blossom end rot"
+    ]
+  }
+}

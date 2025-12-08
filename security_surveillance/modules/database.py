@@ -419,3 +419,430 @@ class EventDatabase:
             'system_events': system,
             'total': detections + system
         }
+
+
+class HealthDatabase:
+    """Manages SQLite database for crop health detection events"""
+    
+    def __init__(self, db_path='data/logs/health_events.db'):
+        """
+        Initialize health database
+        
+        Args:
+            db_path: Path to SQLite database file
+        """
+        self.db_path = db_path
+        
+        # Create directory if needed
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        
+        # Initialize database
+        self._init_database()
+        
+        print(f"🌱 HealthDatabase initialized: {db_path}")
+    
+    def _init_database(self):
+        """Create health detection tables"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Health detection events table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS health_detections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                crop_type TEXT NOT NULL,
+                disease_class TEXT NOT NULL,
+                disease_name TEXT NOT NULL,
+                confidence REAL NOT NULL,
+                is_healthy INTEGER NOT NULL,
+                severity TEXT,
+                symptoms TEXT,
+                organic_treatment TEXT,
+                chemical_treatment TEXT,
+                prevention TEXT,
+                image_path TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Disease statistics table (aggregated data)
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS disease_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                disease_class TEXT NOT NULL UNIQUE,
+                total_detections INTEGER DEFAULT 0,
+                last_detected TEXT,
+                avg_confidence REAL,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Crop monitoring table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS crop_monitoring (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                crop_type TEXT NOT NULL UNIQUE,
+                total_scans INTEGER DEFAULT 0,
+                healthy_count INTEGER DEFAULT 0,
+                disease_count INTEGER DEFAULT 0,
+                last_scan TEXT,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Create indexes for faster queries
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_health_timestamp 
+            ON health_detections(timestamp)
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_health_crop 
+            ON health_detections(crop_type)
+        ''')
+        
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_health_disease 
+            ON health_detections(disease_class)
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def log_detection(self, detection: dict, image_path: str = None):
+        """
+        Log a health detection event
+        
+        Args:
+            detection: Detection dictionary from CropDiseaseDetector
+            image_path: Optional path to saved image
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        recommendations = detection.get('recommendations', {})
+        
+        # Insert detection event
+        cursor.execute('''
+            INSERT INTO health_detections (
+                timestamp, crop_type, disease_class, disease_name,
+                confidence, is_healthy, severity,
+                symptoms, organic_treatment, chemical_treatment, prevention,
+                image_path
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            datetime.now().isoformat(),
+            detection['crop_type'],
+            detection['disease_class'],
+            detection['disease_name'],
+            detection['confidence'],
+            1 if detection['is_healthy'] else 0,
+            recommendations.get('severity', 'unknown'),
+            json.dumps(recommendations.get('symptoms', [])),
+            json.dumps(recommendations.get('organic_treatment', [])),
+            json.dumps(recommendations.get('chemical_treatment', [])),
+            json.dumps(recommendations.get('prevention', [])),
+            image_path
+        ))
+        
+        # Update disease statistics
+        if not detection['is_healthy']:
+            cursor.execute('''
+                INSERT INTO disease_stats (disease_class, total_detections, last_detected, avg_confidence)
+                VALUES (?, 1, ?, ?)
+                ON CONFLICT(disease_class) DO UPDATE SET
+                    total_detections = total_detections + 1,
+                    last_detected = ?,
+                    avg_confidence = (avg_confidence * (total_detections - 1) + ?) / total_detections,
+                    updated_at = CURRENT_TIMESTAMP
+            ''', (
+                detection['disease_class'],
+                datetime.now().isoformat(),
+                detection['confidence'],
+                datetime.now().isoformat(),
+                detection['confidence']
+            ))
+        
+        # Update crop monitoring
+        cursor.execute('''
+            INSERT INTO crop_monitoring (crop_type, total_scans, healthy_count, disease_count, last_scan)
+            VALUES (?, 1, ?, ?, ?)
+            ON CONFLICT(crop_type) DO UPDATE SET
+                total_scans = total_scans + 1,
+                healthy_count = healthy_count + ?,
+                disease_count = disease_count + ?,
+                last_scan = ?,
+                updated_at = CURRENT_TIMESTAMP
+        ''', (
+            detection['crop_type'],
+            1 if detection['is_healthy'] else 0,
+            0 if detection['is_healthy'] else 1,
+            datetime.now().isoformat(),
+            1 if detection['is_healthy'] else 0,
+            0 if detection['is_healthy'] else 1,
+            datetime.now().isoformat()
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_recent_detections(self, limit: int = 10, crop_type: str = None):
+        """
+        Get recent health detection events
+        
+        Args:
+            limit: Maximum number of records to return
+            crop_type: Optional filter by crop type
+            
+        Returns:
+            List of detection records
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        if crop_type:
+            cursor.execute('''
+                SELECT * FROM health_detections 
+                WHERE crop_type = ?
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            ''', (crop_type, limit))
+        else:
+            cursor.execute('''
+                SELECT * FROM health_detections 
+                ORDER BY timestamp DESC 
+                LIMIT ?
+            ''', (limit,))
+        
+        columns = [desc[0] for desc in cursor.description]
+        results = []
+        
+        for row in cursor.fetchall():
+            record = dict(zip(columns, row))
+            # Parse JSON fields
+            if record.get('symptoms'):
+                record['symptoms'] = json.loads(record['symptoms'])
+            if record.get('organic_treatment'):
+                record['organic_treatment'] = json.loads(record['organic_treatment'])
+            if record.get('chemical_treatment'):
+                record['chemical_treatment'] = json.loads(record['chemical_treatment'])
+            if record.get('prevention'):
+                record['prevention'] = json.loads(record['prevention'])
+            results.append(record)
+        
+        conn.close()
+        return results
+    
+    def get_disease_statistics(self, limit: int = None):
+        """
+        Get disease detection statistics
+        
+        Args:
+            limit: Optional limit for top diseases
+            
+        Returns:
+            List of disease statistics
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        query = '''
+            SELECT * FROM disease_stats 
+            ORDER BY total_detections DESC
+        '''
+        
+        if limit:
+            query += f' LIMIT {limit}'
+        
+        cursor.execute(query)
+        
+        columns = [desc[0] for desc in cursor.description]
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        conn.close()
+        return results
+    
+    def get_crop_statistics(self):
+        """
+        Get crop monitoring statistics
+        
+        Returns:
+            List of crop statistics
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT * FROM crop_monitoring 
+            ORDER BY total_scans DESC
+        ''')
+        
+        columns = [desc[0] for desc in cursor.description]
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        conn.close()
+        return results
+    
+    def get_health_summary(self):
+        """
+        Get overall health monitoring summary
+        
+        Returns:
+            Dictionary with summary statistics
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Total detections
+        cursor.execute('SELECT COUNT(*) FROM health_detections')
+        total_detections = cursor.fetchone()[0]
+        
+        # Healthy vs disease
+        cursor.execute('SELECT COUNT(*) FROM health_detections WHERE is_healthy = 1')
+        healthy_count = cursor.fetchone()[0]
+        
+        cursor.execute('SELECT COUNT(*) FROM health_detections WHERE is_healthy = 0')
+        disease_count = cursor.fetchone()[0]
+        
+        # Unique diseases detected
+        cursor.execute('SELECT COUNT(DISTINCT disease_class) FROM disease_stats')
+        unique_diseases = cursor.fetchone()[0]
+        
+        # Crops monitored
+        cursor.execute('SELECT COUNT(*) FROM crop_monitoring')
+        crops_monitored = cursor.fetchone()[0]
+        
+        # Most common disease
+        cursor.execute('''
+            SELECT disease_class, total_detections 
+            FROM disease_stats 
+            ORDER BY total_detections DESC 
+            LIMIT 1
+        ''')
+        top_disease = cursor.fetchone()
+        
+        # Most scanned crop
+        cursor.execute('''
+            SELECT crop_type, total_scans 
+            FROM crop_monitoring 
+            ORDER BY total_scans DESC 
+            LIMIT 1
+        ''')
+        top_crop = cursor.fetchone()
+        
+        conn.close()
+        
+        summary = {
+            'total_detections': total_detections,
+            'healthy_count': healthy_count,
+            'disease_count': disease_count,
+            'health_rate': (healthy_count / total_detections * 100) if total_detections > 0 else 0,
+            'unique_diseases': unique_diseases,
+            'crops_monitored': crops_monitored,
+            'most_common_disease': top_disease[0] if top_disease else None,
+            'most_common_disease_count': top_disease[1] if top_disease else 0,
+            'most_scanned_crop': top_crop[0] if top_crop else None,
+            'most_scanned_crop_count': top_crop[1] if top_crop else 0
+        }
+        
+        return summary
+    
+    def get_detections_by_date(self, start_date: str, end_date: str = None):
+        """
+        Get detections within a date range
+        
+        Args:
+            start_date: Start date (ISO format)
+            end_date: End date (ISO format), defaults to now
+            
+        Returns:
+            List of detection records
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        if end_date:
+            cursor.execute('''
+                SELECT * FROM health_detections 
+                WHERE timestamp BETWEEN ? AND ?
+                ORDER BY timestamp DESC
+            ''', (start_date, end_date))
+        else:
+            cursor.execute('''
+                SELECT * FROM health_detections 
+                WHERE timestamp >= ?
+                ORDER BY timestamp DESC
+            ''', (start_date,))
+        
+        columns = [desc[0] for desc in cursor.description]
+        results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        conn.close()
+        return results
+    
+    def cleanup_old_records(self, days: int = 30):
+        """
+        Delete detection records older than specified days
+        
+        Args:
+            days: Number of days to keep
+            
+        Returns:
+            Number of records deleted
+        """
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            DELETE FROM health_detections 
+            WHERE timestamp < datetime('now', '-' || ? || ' days')
+        ''', (days,))
+        
+        deleted = cursor.rowcount
+        
+        conn.commit()
+        conn.close()
+        
+        if deleted > 0:
+            print(f"🗑️ Health database cleanup: Deleted {deleted} old records")
+        
+        return deleted
+    
+    def export_to_csv(self, output_path: str, start_date: str = None):
+        """
+        Export detection records to CSV file
+        
+        Args:
+            output_path: Path to output CSV file
+            start_date: Optional start date filter
+        """
+        import csv
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        if start_date:
+            cursor.execute('''
+                SELECT timestamp, crop_type, disease_class, disease_name, 
+                       confidence, is_healthy, severity 
+                FROM health_detections 
+                WHERE timestamp >= ?
+                ORDER BY timestamp DESC
+            ''', (start_date,))
+        else:
+            cursor.execute('''
+                SELECT timestamp, crop_type, disease_class, disease_name, 
+                       confidence, is_healthy, severity 
+                FROM health_detections 
+                ORDER BY timestamp DESC
+            ''')
+        
+        with open(output_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Timestamp', 'Crop', 'Disease Class', 'Disease Name', 
+                           'Confidence', 'Is Healthy', 'Severity'])
+            writer.writerows(cursor.fetchall())
+        
+        conn.close()
+        print(f"📄 Exported health records to: {output_path}")

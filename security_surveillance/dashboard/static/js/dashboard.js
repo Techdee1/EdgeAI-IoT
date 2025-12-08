@@ -3,7 +3,9 @@
 // ============================================
 
 // Global state
-let currentMode = 'security';
+let currentMode = 'security'; // UI mode (security or agriculture tabs)
+let backendMode = 'security'; // Backend system mode (security or health)
+let isSwitchingMode = false; // Mode switch in progress
 let websocket = null;
 let reconnectAttempts = 0;
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -17,7 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize UI
     initModeSwitcher();
+    initBackendModeToggle();
     initVideoStream();
+    
+    // Check current backend mode
+    checkBackendMode();
     
     // Connect WebSocket
     connectWebSocket();
@@ -28,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set up periodic updates
     setInterval(updateDashboard, 5000); // Update every 5 seconds
+    setInterval(checkBackendMode, 10000); // Check backend mode every 10 seconds
     
     // Initialize event listeners
     initEventListeners();
@@ -36,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// Mode Switching
+// Mode Switching (UI Tabs)
 // ============================================
 function initModeSwitcher() {
     const securityBtn = document.getElementById('securityModeBtn');
@@ -62,6 +69,147 @@ function switchMode(mode) {
     document.getElementById(`${mode}Dashboard`).classList.add('active');
     
     console.log(`📊 Switched to ${mode} mode`);
+}
+
+// ============================================
+// Backend Mode Toggle (System Mode Switching)
+// ============================================
+function initBackendModeToggle() {
+    const toggleBtn = document.getElementById('toggleBackendMode');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleBackendMode);
+    }
+}
+
+async function checkBackendMode() {
+    try {
+        const response = await fetch('/api/mode');
+        const data = await response.json();
+        
+        backendMode = data.mode;
+        isSwitchingMode = data.switching;
+        
+        updateBackendModeUI();
+        
+        // Show/hide health section based on backend mode
+        if (backendMode === 'health') {
+            loadHealthData();
+        }
+        
+    } catch (error) {
+        console.error('Failed to check backend mode:', error);
+    }
+}
+
+function updateBackendModeUI() {
+    const modeLabel = document.getElementById('currentModeLabel');
+    const toggleBtn = document.getElementById('toggleBackendMode');
+    const toggleText = document.getElementById('toggleModeText');
+    
+    if (isSwitchingMode) {
+        if (modeLabel) modeLabel.textContent = 'Mode: Switching...';
+        if (toggleBtn) {
+            toggleBtn.disabled = true;
+            toggleBtn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Switching...';
+        }
+        return;
+    }
+    
+    // Update mode label
+    const modeDisplayName = backendMode === 'security' ? 'Security' : 'Health';
+    if (modeLabel) modeLabel.textContent = `Mode: ${modeDisplayName}`;
+    
+    // Update toggle button
+    const targetMode = backendMode === 'security' ? 'health' : 'security';
+    const targetDisplayName = targetMode === 'security' ? 'Security' : 'Health';
+    if (toggleBtn) {
+        toggleBtn.disabled = false;
+        toggleBtn.innerHTML = `<i class=\"fas fa-exchange-alt\"></i> <span id=\"toggleModeText\">Switch to ${targetDisplayName}</span>`;
+    }
+    
+    // Show/hide sections in agriculture dashboard
+    const healthSection = document.getElementById('healthSection');
+    const agricultureSection = document.getElementById('agricultureSection');
+    
+    if (healthSection && agricultureSection) {
+        if (backendMode === 'health') {
+            healthSection.style.display = 'block';
+            agricultureSection.style.display = 'none';
+        } else {
+            healthSection.style.display = 'none';
+            agricultureSection.style.display = 'block';
+        }
+    }
+}
+
+async function toggleBackendMode() {
+    if (isSwitchingMode) return;
+    
+    const targetMode = backendMode === 'security' ? 'health' : 'security';
+    const confirmed = confirm(`Switch system mode to ${targetMode.toUpperCase()}?\n\nThis will stop the current system and start the ${targetMode} system.`);
+    
+    if (!confirmed) return;
+    
+    isSwitchingMode = true;
+    updateBackendModeUI();
+    
+    try {
+        const response = await fetch(`/api/switch_mode?mode=${targetMode}`, {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log(`✅ Switched to ${data.mode} mode`);
+            backendMode = data.mode;
+            
+            // Show success message
+            showNotification(`System switched to ${data.mode} mode`, 'success');
+            
+            // Reload data
+            setTimeout(() => {
+                checkBackendMode();
+                if (data.mode === 'health') {
+                    loadHealthData();
+                    // Switch to agriculture tab to see health data
+                    switchMode('agriculture');
+                }
+            }, 2000);
+        } else {
+            console.error('Failed to switch mode:', data.error);
+            showNotification(`Failed to switch mode: ${data.error}`, 'error');
+        }
+        
+    } catch (error) {
+        console.error('Error switching mode:', error);
+        showNotification('Error switching mode', 'error');
+    } finally {
+        isSwitchingMode = false;
+        setTimeout(() => updateBackendModeUI(), 2000);
+    }
+}
+
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class=\"fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}\"></i>
+        <span>${message}</span>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show with animation
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
 }
 
 // ============================================
@@ -505,6 +653,203 @@ function prependAlert(alert) {
 }
 
 // ============================================
+// Health Monitoring Data Loading
+// ============================================
+async function loadHealthData() {
+    try {
+        await Promise.all([
+            loadHealthStats(),
+            loadHealthDetections(),
+            loadMonitoredCrops(),
+            loadDiseaseStats()
+        ]);
+    } catch (error) {
+        console.error('Failed to load health data:', error);
+    }
+}
+
+async function loadHealthStats() {
+    try {
+        const response = await fetch('/api/agriculture/health/stats');
+        const data = await response.json();
+        
+        if (data.error) {
+            console.log('Health stats not available:', data.error);
+            return;
+        }
+        
+        // Update stat cards
+        const summary = data.summary;
+        document.getElementById('totalHealthScans').textContent = summary.total_detections || 0;
+        document.getElementById('healthyCount').textContent = summary.healthy_count || 0;
+        document.getElementById('diseaseCount').textContent = summary.disease_count || 0;
+        document.getElementById('cropsMonitored').textContent = summary.crops_monitored || 0;
+        
+    } catch (error) {
+        console.error('Failed to load health stats:', error);
+    }
+}
+
+async function loadHealthDetections() {
+    try {
+        const response = await fetch('/api/agriculture/health/detections?limit=10');
+        const data = await response.json();
+        
+        const container = document.getElementById('healthDetectionsList');
+        if (!container) return;
+        
+        if (!data.detections || data.detections.length === 0) {
+            container.innerHTML = `
+                <div class=\"no-data\">
+                    <i class=\"fas fa-search\"></i>
+                    <p>No detections yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Build detection items
+        let html = '';
+        data.detections.forEach(det => {
+            const severityClass = det.severity || 'moderate';
+            const confidence = (det.confidence || 0).toFixed(1);
+            const timestamp = new Date(det.timestamp).toLocaleString();
+            
+            html += `
+                <div class=\"detection-item health-detection\">
+                    <div class=\"detection-header\">
+                        <span class=\"crop-name\">${det.crop_type}</span>
+                        <span class=\"severity-badge ${severityClass}\">${det.severity || 'N/A'}</span>
+                    </div>
+                    <div class=\"disease-name\">${det.disease_name}</div>
+                    <div class=\"detection-meta\">
+                        <span><i class=\"fas fa-percentage\"></i> ${confidence}%</span>
+                        <span><i class=\"fas fa-clock\"></i> ${timestamp}</span>
+                    </div>
+                    ${det.symptoms && det.symptoms.length > 0 ? `
+                        <div class=\"symptoms-preview\">
+                            <strong>Symptoms:</strong> ${det.symptoms[0]}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Failed to load health detections:', error);
+    }
+}
+
+async function loadMonitoredCrops() {
+    try {
+        const response = await fetch('/api/agriculture/health/crops');
+        const data = await response.json();
+        
+        const container = document.getElementById('cropsList');
+        if (!container) return;
+        
+        if (!data.crops || data.crops.length === 0) {
+            container.innerHTML = `
+                <div class=\"no-data\">
+                    <i class=\"fas fa-seedling\"></i>
+                    <p>No crops monitored yet</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Build crops list
+        let html = '<div class=\"crops-grid\">';
+        data.crops.forEach(crop => {
+            html += `
+                <div class=\"crop-item\">
+                    <div class=\"crop-header\">
+                        <i class=\"fas fa-leaf\"></i>
+                        <h3>${crop.crop_type}</h3>
+                    </div>
+                    <div class=\"crop-stats\">
+                        <div class=\"stat\">
+                            <span class=\"label\">Scans:</span>
+                            <span class=\"value\">${crop.total_scans}</span>
+                        </div>
+                        <div class=\"stat\">
+                            <span class=\"label\">Healthy:</span>
+                            <span class=\"value success\">${crop.healthy_count}</span>
+                        </div>
+                        <div class=\"stat\">
+                            <span class=\"label\">Diseased:</span>
+                            <span class=\"value warning\">${crop.disease_count}</span>
+                        </div>
+                        <div class=\"stat\">
+                            <span class=\"label\">Health Rate:</span>
+                            <span class=\"value\">${crop.health_rate.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                    <div class=\"crop-footer\">
+                        Last scan: ${new Date(crop.last_scan).toLocaleString()}
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Failed to load monitored crops:', error);
+    }
+}
+
+async function loadDiseaseStats() {
+    try {
+        const response = await fetch('/api/agriculture/health/diseases?limit=10');
+        const data = await response.json();
+        
+        const container = document.getElementById('diseaseStatsList');
+        if (!container) return;
+        
+        if (!data.diseases || data.diseases.length === 0) {
+            container.innerHTML = `
+                <div class=\"no-data\">
+                    <i class=\"fas fa-info-circle\"></i>
+                    <p>No disease data available</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Build disease stats list
+        let html = '';
+        data.diseases.forEach(disease => {
+            const avgConf = (disease.avg_confidence || 0).toFixed(1);
+            html += `
+                <div class=\"disease-stat-item\">
+                    <div class=\"disease-info\">
+                        <h4>${disease.disease_name || disease.disease_class}</h4>
+                        <p class=\"crop-type\">${disease.crop_type}</p>
+                    </div>
+                    <div class=\"disease-count\">
+                        <span class=\"count\">${disease.detection_count || disease.total_detections}</span>
+                        <span class=\"label\">detections</span>
+                    </div>
+                    <div class=\"disease-confidence\">
+                        <span class=\"label\">Avg confidence:</span>
+                        <span class=\"value\">${avgConf}%</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Failed to load disease stats:', error);
+    }
+}
+
+// ============================================
 // Irrigation Control
 // ============================================
 async function controlIrrigation(action, duration = null) {
@@ -633,6 +978,9 @@ function initEventListeners() {
     document.getElementById('refreshAlerts')?.addEventListener('click', loadAgricultureAlerts);
     document.getElementById('sensorType')?.addEventListener('change', loadSensorHistory);
     document.getElementById('historyPeriod')?.addEventListener('change', loadSensorHistory);
+    
+    // Health monitoring
+    document.getElementById('refreshHealthDetections')?.addEventListener('click', loadHealthDetections);
     
     // Irrigation controls
     document.getElementById('startIrrigationBtn')?.addEventListener('click', () => {

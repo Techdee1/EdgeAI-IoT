@@ -325,3 +325,203 @@ async def get_agriculture_system_status(request: Request):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# CROP HEALTH MONITORING ENDPOINTS
+# ============================================================================
+
+@router.get("/health/stats")
+async def get_health_stats(request: Request):
+    """
+    Get crop health monitoring statistics
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        if not app_state.health_db:
+            return {
+                "error": "Health database not available",
+                "mode": app_state.mode,
+                "message": "Switch to health mode to access health monitoring data"
+            }
+        
+        # Get summary from database
+        summary = app_state.health_db.get_health_summary()
+        crop_stats = app_state.health_db.get_crop_statistics()
+        disease_stats = app_state.health_db.get_disease_statistics(limit=5)
+        
+        return {
+            "summary": summary,
+            "crops": crop_stats,
+            "top_diseases": disease_stats,
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health/detections")
+async def get_health_detections(
+    request: Request,
+    limit: int = 10,
+    crop_type: Optional[str] = None
+):
+    """
+    Get recent crop disease detections
+    
+    Args:
+        limit: Maximum number of detections to return
+        crop_type: Optional filter by crop type
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        if not app_state.health_db:
+            return {
+                "error": "Health database not available",
+                "detections": [],
+                "count": 0
+            }
+        
+        # Get recent detections
+        detections = app_state.health_db.get_recent_detections(
+            limit=limit,
+            crop_type=crop_type
+        )
+        
+        return {
+            "detections": detections,
+            "count": len(detections),
+            "filter": {"crop_type": crop_type} if crop_type else None,
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health/latest")
+async def get_latest_detection(request: Request):
+    """
+    Get the most recent crop health detection
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        # Try to get from running health system first
+        if app_state.health_system:
+            latest = app_state.health_system.get_latest_detection()
+            if latest:
+                return {
+                    "detection": latest['detection'],
+                    "timestamp": latest['timestamp'].isoformat(),
+                    "source": "live_system"
+                }
+        
+        # Fallback to database
+        if app_state.health_db:
+            detections = app_state.health_db.get_recent_detections(limit=1)
+            if detections:
+                return {
+                    "detection": detections[0],
+                    "source": "database"
+                }
+        
+        return {
+            "detection": None,
+            "message": "No detections available"
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health/crops")
+async def get_monitored_crops(request: Request):
+    """
+    Get list of crops being monitored
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        if not app_state.health_db:
+            return {"crops": [], "count": 0}
+        
+        crop_stats = app_state.health_db.get_crop_statistics()
+        
+        # Format crop data
+        crops = []
+        for stat in crop_stats:
+            health_rate = (stat['healthy_count'] / stat['total_scans'] * 100) if stat['total_scans'] > 0 else 0
+            crops.append({
+                "crop_type": stat['crop_type'],
+                "total_scans": stat['total_scans'],
+                "healthy_count": stat['healthy_count'],
+                "disease_count": stat['disease_count'],
+                "health_rate": round(health_rate, 1),
+                "last_scan": stat['last_scan']
+            })
+        
+        return {
+            "crops": crops,
+            "count": len(crops),
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health/diseases")
+async def get_detected_diseases(request: Request, limit: int = 10):
+    """
+    Get list of diseases detected with statistics
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        if not app_state.health_db:
+            return {"diseases": [], "count": 0}
+        
+        disease_stats = app_state.health_db.get_disease_statistics(limit=limit)
+        
+        return {
+            "diseases": disease_stats,
+            "count": len(disease_stats),
+            "timestamp": datetime.now().isoformat()
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/health/system_status")
+async def get_health_system_status(request: Request):
+    """
+    Get health monitoring system status
+    """
+    try:
+        app_state = request.app.state.app_state
+        
+        status = {
+            "mode": app_state.mode,
+            "system_active": app_state.health_system is not None and app_state.health_system.running if hasattr(app_state.health_system, 'running') else False,
+            "database_connected": app_state.health_db is not None,
+            "camera_connected": app_state.camera is not None,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        # Add live stats if system is running
+        if app_state.health_system and hasattr(app_state.health_system, 'get_stats'):
+            try:
+                live_stats = app_state.health_system.get_stats()
+                status['live_stats'] = live_stats
+            except:
+                pass
+        
+        return status
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

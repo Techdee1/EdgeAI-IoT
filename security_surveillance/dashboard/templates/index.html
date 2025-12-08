@@ -38,6 +38,15 @@
                 </button>
             </div>
             
+            <!-- Backend Mode Toggle -->
+            <div class="backend-mode-toggle">
+                <span class="mode-label" id="currentModeLabel">Mode: Security</span>
+                <button id="toggleBackendMode" class="toggle-btn" title="Switch system mode">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="toggleModeText">Switch to Health</span>
+                </button>
+            </div>
+            
             <!-- System Status -->
             <div class="system-status">
                 <div class="status-indicator">
@@ -197,6 +206,110 @@
         <!-- ============================================ -->
         <div id="agricultureDashboard" class="dashboard-mode">
             
+            <!-- Health Monitoring Section (shown when backend is in health mode) -->
+            <div id="healthSection" class="health-section" style="display: none;">
+                <div class="section-header">
+                    <h2><i class="fas fa-heartbeat"></i> Crop Health Monitoring</h2>
+                    <span class="section-badge">Active</span>
+                </div>
+                
+                <!-- Health Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon health">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalHealthScans">0</h3>
+                            <p>Total Scans</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="healthyCount">0</h3>
+                            <p>Healthy Plants</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-disease"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="diseaseCount">0</h3>
+                            <p>Diseases Detected</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon info">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="cropsMonitored">0</h3>
+                            <p>Crops Monitored</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Health Content Grid -->
+                <div class="content-grid">
+                    <!-- Recent Disease Detections -->
+                    <div class="card health-detections-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-virus"></i> Recent Detections</h2>
+                            <button id="refreshHealthDetections" class="icon-btn" title="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="healthDetectionsList" class="health-detections-list">
+                                <div class="no-data">
+                                    <i class="fas fa-search"></i>
+                                    <p>No detections yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Disease Statistics -->
+                    <div class="card disease-stats-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-chart-pie"></i> Disease Distribution</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="diseaseStatsList" class="disease-stats-list">
+                                <div class="no-data">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p>No disease data available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Monitored Crops -->
+                <div class="card crops-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-spa"></i> Monitored Crops</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="cropsList" class="crops-list">
+                            <div class="no-data">
+                                <i class="fas fa-seedling"></i>
+                                <p>No crops monitored yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agriculture Sensors Section (shown when backend is in security mode) -->
+            <div id="agricultureSection" class="agriculture-section">
             <!-- Top Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -353,6 +466,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
 
         </div>
