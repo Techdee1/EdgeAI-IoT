@@ -237,7 +237,23 @@ class EventDatabase:
             ''', (limit,))
         
         rows = cursor.fetchall()
-        events = [dict(row) for row in rows]
+        events = []
+        for row in rows:
+            event = dict(row)
+            # Parse JSON metadata if it exists
+            if event.get('metadata'):
+                try:
+                    if isinstance(event['metadata'], str):
+                        event['metadata'] = json.loads(event['metadata'])
+                    elif isinstance(event['metadata'], bytes):
+                        event['metadata'] = json.loads(event['metadata'].decode('utf-8'))
+                except:
+                    event['metadata'] = {}
+            # Ensure bbox coordinates are properly typed
+            for coord in ['x1', 'y1', 'x2', 'y2']:
+                if coord in event and event[coord] is not None:
+                    event[coord] = float(event[coord])
+            events.append(event)
         
         conn.close()
         return events

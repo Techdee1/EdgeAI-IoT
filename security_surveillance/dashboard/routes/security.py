@@ -73,6 +73,19 @@ async def get_recent_detections(
         if zone:
             detections = [d for d in detections if d.get('zone_name') == zone]
         
+        # Convert any bytes/binary data to serializable format
+        for detection in detections:
+            # Remove or convert non-serializable fields
+            if 'metadata' in detection and isinstance(detection['metadata'], bytes):
+                try:
+                    detection['metadata'] = detection['metadata'].decode('utf-8')
+                except:
+                    detection['metadata'] = None
+            # Ensure bbox coordinates are numbers not bytes
+            for coord in ['x1', 'y1', 'x2', 'y2']:
+                if coord in detection and detection[coord] is not None:
+                    detection[coord] = float(detection[coord]) if detection[coord] else None
+        
         return {
             "detections": detections,
             "count": len(detections),
