@@ -75,16 +75,28 @@ async def get_recent_detections(
         
         # Convert any bytes/binary data to serializable format
         for detection in detections:
-            # Remove or convert non-serializable fields
-            if 'metadata' in detection and isinstance(detection['metadata'], bytes):
-                try:
-                    detection['metadata'] = detection['metadata'].decode('utf-8')
-                except:
-                    detection['metadata'] = None
+            # Convert ALL fields that might be bytes
+            for key, value in list(detection.items()):
+                if isinstance(value, bytes):
+                    try:
+                        # Try UTF-8 decode
+                        detection[key] = value.decode('utf-8')
+                    except UnicodeDecodeError:
+                        try:
+                            # Try latin-1 as fallback
+                            detection[key] = value.decode('latin-1')
+                        except:
+                            # If all else fails, use base64 encoding for binary data
+                            import base64
+                            detection[key] = base64.b64encode(value).decode('ascii')
+            
             # Ensure bbox coordinates are numbers not bytes
-            for coord in ['x1', 'y1', 'x2', 'y2']:
+            for coord in ['bbox_x1', 'bbox_y1', 'bbox_x2', 'bbox_y2']:
                 if coord in detection and detection[coord] is not None:
-                    detection[coord] = float(detection[coord]) if detection[coord] else None
+                    try:
+                        detection[coord] = float(detection[coord])
+                    except (ValueError, TypeError):
+                        detection[coord] = None
         
         return {
             "detections": detections,
@@ -288,10 +300,20 @@ async def video_stream(request: Request, quality: str = "medium"):
             """Generator function for MJPEG stream"""
             try:
                 while True:
-                    # Get frame from camera (returns tuple: success, frame)
-                    ret, frame = app_state.camera.read_frame()
+                    frame = None
                     
-                    if not ret or frame is None:
+                    # Try to get annotated frame from surveillance system first
+                    if hasattr(app_state, 'surveillance_system') and app_state.surveillance_system:
+                        if hasattr(app_state.surveillance_system, 'latest_annotated_frame'):
+                            frame = app_state.surveillance_system.latest_annotated_frame
+                    
+                    # Fallback to camera if no surveillance frame available
+                    if frame is None and app_state.camera:
+                        ret, frame = app_state.camera.read_frame()
+                        if not ret or frame is None:
+                            frame = None
+                    
+                    if frame is None:
                         # Camera not providing frames, send error frame
                         error_frame = create_error_frame("Camera Unavailable")
                         _, buffer = cv2.imencode('.jpg', error_frame, 

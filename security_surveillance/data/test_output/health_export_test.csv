@@ -1,0 +1,4 @@
+Timestamp,Crop,Disease Class,Disease Name,Confidence,Is Healthy,Severity
+2025-12-08T17:17:13.245443,Potato,Potato___Early_blight,Early blight,0.78,0,moderate
+2025-12-08T17:17:13.242029,Tomato,Tomato___healthy,healthy,0.95,1,none
+2025-12-08T17:17:13.238498,Tomato,Tomato___Late_blight,Late blight,0.89,0,critical

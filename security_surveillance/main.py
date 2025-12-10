@@ -44,6 +44,8 @@ class SurveillanceSystem:
         # System state
         self.running = False
         self.frame_count = 0
+        self.latest_frame = None  # Store latest frame for streaming
+        self.latest_annotated_frame = None  # Store annotated frame with detections
         
         # Initialize all components
         self._init_components()
@@ -255,6 +257,10 @@ class SurveillanceSystem:
                     draw_boxes=True
                 )
                 
+                # Store annotated frame for streaming
+                self.latest_frame = frame
+                self.latest_annotated_frame = annotated_frame
+                
                 if detections:
                     self._handle_detections(frame, detections, annotated_frame)
                 
@@ -262,6 +268,10 @@ class SurveillanceSystem:
                 if self.recorder:
                     self.recorder.update_recording(annotated_frame, has_detection=len(detections) > 0)
             else:
+                # Store raw frame for streaming (no detections)
+                self.latest_frame = frame
+                self.latest_annotated_frame = frame
+                
                 # Update recording without detections
                 if self.recorder:
                     self.recorder.update_recording(frame, has_detection=False)
