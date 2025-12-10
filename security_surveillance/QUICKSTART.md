@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Edge AI Dashboard
+# 🚀 Quick Start Guide - EcoGuard
 
 ## Start Dashboard (Development/Testing)
 

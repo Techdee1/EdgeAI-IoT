@@ -1,5 +1,5 @@
 // ============================================
-// Edge AI Dashboard - JavaScript Controller
+// EcoGuard - JavaScript Controller
 // ============================================
 
 // Global state
@@ -15,7 +15,7 @@ let charts = {};
 // Initialization
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Edge AI Dashboard initializing...');
+    console.log('🚀 EcoGuard initializing...');
     
     // Initialize UI
     initModeSwitcher();
@@ -47,9 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 function initModeSwitcher() {
     const securityBtn = document.getElementById('securityModeBtn');
+    const healthBtn = document.getElementById('healthModeBtn');
     const agricultureBtn = document.getElementById('agricultureModeBtn');
     
     securityBtn.addEventListener('click', () => switchMode('security'));
+    healthBtn.addEventListener('click', () => switchMode('health'));
     agricultureBtn.addEventListener('click', () => switchMode('agriculture'));
 }
 
@@ -72,13 +74,16 @@ function switchMode(mode) {
 }
 
 // ============================================
-// Backend Mode Toggle (System Mode Switching)
+// System Mode Switching (Backend Mode)
 // ============================================
 function initBackendModeToggle() {
-    const toggleBtn = document.getElementById('toggleBackendMode');
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', toggleBackendMode);
-    }
+    const systemModeButtons = document.querySelectorAll('.system-mode-btn');
+    systemModeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetMode = btn.getAttribute('data-system-mode');
+            switchSystemMode(targetMode);
+        });
+    });
 }
 
 async function checkBackendMode() {
@@ -102,51 +107,48 @@ async function checkBackendMode() {
 }
 
 function updateBackendModeUI() {
-    const modeLabel = document.getElementById('currentModeLabel');
-    const toggleBtn = document.getElementById('toggleBackendMode');
-    const toggleText = document.getElementById('toggleModeText');
+    const systemModeButtons = document.querySelectorAll('.system-mode-btn');
     
-    if (isSwitchingMode) {
-        if (modeLabel) modeLabel.textContent = 'Mode: Switching...';
-        if (toggleBtn) {
-            toggleBtn.disabled = true;
-            toggleBtn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Switching...';
-        }
-        return;
-    }
-    
-    // Update mode label
-    const modeDisplayName = backendMode === 'security' ? 'Security' : 'Health';
-    if (modeLabel) modeLabel.textContent = `Mode: ${modeDisplayName}`;
-    
-    // Update toggle button
-    const targetMode = backendMode === 'security' ? 'health' : 'security';
-    const targetDisplayName = targetMode === 'security' ? 'Security' : 'Health';
-    if (toggleBtn) {
-        toggleBtn.disabled = false;
-        toggleBtn.innerHTML = `<i class=\"fas fa-exchange-alt\"></i> <span id=\"toggleModeText\">Switch to ${targetDisplayName}</span>`;
-    }
-    
-    // Show/hide sections in agriculture dashboard
-    const healthSection = document.getElementById('healthSection');
-    const agricultureSection = document.getElementById('agricultureSection');
-    
-    if (healthSection && agricultureSection) {
-        if (backendMode === 'health') {
-            healthSection.style.display = 'block';
-            agricultureSection.style.display = 'none';
+    // Update button states
+    systemModeButtons.forEach(btn => {
+        const btnMode = btn.getAttribute('data-system-mode');
+        
+        if (isSwitchingMode) {
+            btn.disabled = true;
+            if (btnMode === backendMode) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Switching...</span>';
+            }
         } else {
-            healthSection.style.display = 'none';
-            agricultureSection.style.display = 'block';
+            btn.disabled = false;
+            const icon = btnMode === 'security' ? 'fa-shield-alt' : 'fa-seedling';
+            const label = btnMode === 'security' ? 'Security' : 'Health';
+            btn.innerHTML = `<i class="fas ${icon}"></i> <span>${label}</span>`;
+            
+            // Set active state
+            if (btnMode === backendMode) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
         }
+    });
+    
+    // Auto-switch to health dashboard view when backend is in health mode
+    if (backendMode === 'health' && currentMode !== 'health') {
+        switchMode('health');
     }
 }
 
-async function toggleBackendMode() {
+async function switchSystemMode(targetMode) {
     if (isSwitchingMode) return;
     
-    const targetMode = backendMode === 'security' ? 'health' : 'security';
-    const confirmed = confirm(`Switch system mode to ${targetMode.toUpperCase()}?\n\nThis will stop the current system and start the ${targetMode} system.`);
+    // Don't switch if already in target mode
+    if (targetMode === backendMode) {
+        showNotification(`Already in ${targetMode} mode`, 'info');
+        return;
+    }
+    
+    const confirmed = confirm(`Switch system to ${targetMode.toUpperCase()} mode?\n\nThis will stop the current system and start the ${targetMode} system.\nNote: You may need to restart the server for full functionality.`);
     
     if (!confirmed) return;
     
@@ -165,7 +167,7 @@ async function toggleBackendMode() {
             backendMode = data.mode;
             
             // Show success message
-            showNotification(`System switched to ${data.mode} mode`, 'success');
+            showNotification(`System switched to ${data.mode} mode. Please restart server for full functionality.`, 'success');
             
             // Reload data
             setTimeout(() => {
@@ -711,15 +713,27 @@ async function loadHealthDetections() {
         // Build detection items
         let html = '';
         data.detections.forEach(det => {
-            const severityClass = det.severity || 'moderate';
-            const confidence = (det.confidence || 0).toFixed(1);
+            // Handle severity display
+            let severity = det.severity;
+            let severityClass = det.severity || 'moderate';
+            
+            // For healthy plants, show 'healthy' instead of 'none'
+            if (det.is_healthy === 1 || det.is_healthy === true) {
+                severity = 'healthy';
+                severityClass = 'low';
+            } else if (severity === 'none') {
+                severity = 'N/A';
+            }
+            
+            // Convert confidence from 0-1 to percentage
+            const confidence = ((det.confidence || 0) * 100).toFixed(1);
             const timestamp = new Date(det.timestamp).toLocaleString();
             
             html += `
                 <div class=\"detection-item health-detection\">
                     <div class=\"detection-header\">
                         <span class=\"crop-name\">${det.crop_type}</span>
-                        <span class=\"severity-badge ${severityClass}\">${det.severity || 'N/A'}</span>
+                        <span class=\"severity-badge ${severityClass}\">${severity}</span>
                     </div>
                     <div class=\"disease-name\">${det.disease_name}</div>
                     <div class=\"detection-meta\">
@@ -1048,3 +1062,220 @@ window.playRecording = playRecording;
 window.downloadRecording = downloadRecording;
 
 console.log('✅ Dashboard JavaScript loaded');
+
+// ============================================
+// Camera Source Selection & Image Upload
+// ============================================
+
+// Handle image source radio button changes
+document.querySelectorAll('input[name="imageSource"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const selectedSource = this.value;
+        console.log('Image source changed to:', selectedSource);
+        
+        // Update UI based on selection
+        updateSourceUI(selectedSource);
+    });
+});
+
+function updateSourceUI(source) {
+    const rtspInput = document.getElementById('rtspUrl');
+    const deviceSelect = document.getElementById('deviceCamera');
+    const uploadArea = document.getElementById('uploadArea');
+    
+    // Enable/disable inputs based on selected source
+    if (source === 'camera') {
+        rtspInput.disabled = false;
+        deviceSelect.disabled = true;
+        uploadArea.style.opacity = '0.5';
+    } else if (source === 'device') {
+        rtspInput.disabled = true;
+        deviceSelect.disabled = false;
+        uploadArea.style.opacity = '0.5';
+    } else if (source === 'upload') {
+        rtspInput.disabled = true;
+        deviceSelect.disabled = true;
+        uploadArea.style.opacity = '1';
+    }
+}
+
+// Handle file selection
+document.getElementById('selectFileBtn')?.addEventListener('click', function() {
+    document.getElementById('imageUpload').click();
+});
+
+document.getElementById('imageUpload')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const fileNameSpan = document.getElementById('selectedFileName');
+        fileNameSpan.textContent = file.name;
+        fileNameSpan.style.color = 'var(--success)';
+        console.log('File selected:', file.name);
+    }
+});
+
+// Connect to camera source
+document.getElementById('connectCameraBtn')?.addEventListener('click', async function() {
+    const selectedSource = document.querySelector('input[name="imageSource"]:checked').value;
+    const statusDiv = document.getElementById('cameraStatus');
+    
+    statusDiv.className = 'status-message info';
+    statusDiv.textContent = 'Connecting...';
+    
+    try {
+        let source;
+        if (selectedSource === 'camera') {
+            source = document.getElementById('rtspUrl').value;
+        } else if (selectedSource === 'device') {
+            source = document.getElementById('deviceCamera').value;
+        } else {
+            statusDiv.className = 'status-message error';
+            statusDiv.textContent = 'Please select WiFi Camera or Device Camera to connect';
+            return;
+        }
+        
+        const response = await fetch('/api/select_camera', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `source=${encodeURIComponent(source)}`
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            statusDiv.className = 'status-message success';
+            statusDiv.textContent = `✓ ${data.message}`;
+        } else {
+            statusDiv.className = 'status-message error';
+            statusDiv.textContent = `✗ ${data.error}`;
+        }
+    } catch (error) {
+        console.error('Camera connection error:', error);
+        statusDiv.className = 'status-message error';
+        statusDiv.textContent = `✗ Connection failed: ${error.message}`;
+    }
+});
+
+// Capture & Analyze image
+document.getElementById('captureBtn')?.addEventListener('click', async function() {
+    const selectedSource = document.querySelector('input[name="imageSource"]:checked').value;
+    const statusDiv = document.getElementById('cameraStatus');
+    
+    if (selectedSource === 'upload') {
+        // Handle file upload
+        const fileInput = document.getElementById('imageUpload');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            statusDiv.className = 'status-message error';
+            statusDiv.textContent = '✗ Please select an image file first';
+            return;
+        }
+        
+        statusDiv.className = 'status-message info';
+        statusDiv.textContent = 'Uploading and analyzing image...';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            console.log('Uploading file...');
+            const response = await fetch('/api/upload_image', {
+                method: 'POST',
+                body: formData
+            });
+            
+            console.log('Response status:', response.status, response.statusText);
+            
+            // Check if response is ok (status 200-299)
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
+                console.error('Server error response:', errorData);
+                throw new Error(errorData.detail || errorData.error || `Upload failed with status ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Upload response data:', data);
+            
+            if (data.success) {
+                statusDiv.className = 'status-message success';
+                
+                if (data.detection) {
+                    const healthStatus = data.detection.is_healthy ? '✓ Healthy Plant' : '⚠ Disease Detected';
+                    const statusColor = data.detection.is_healthy ? '#10b981' : '#ef4444';
+                    const rec = data.detection.recommendations || {};
+                    
+                    let html = `
+                        <div style="color: ${statusColor}"><strong>${healthStatus}</strong></div>
+                        <strong>Crop:</strong> ${data.detection.crop_type}<br>
+                        <strong>Condition:</strong> ${data.detection.disease}<br>
+                        <strong>Confidence:</strong> ${(data.detection.confidence * 100).toFixed(1)}%<br>
+                        <strong>Severity:</strong> ${data.detection.severity || (data.detection.is_healthy ? 'healthy' : 'N/A')}
+                    `;
+                    
+                    // Add symptoms if disease detected
+                    if (!data.detection.is_healthy && rec.symptoms && rec.symptoms.length > 0) {
+                        html += `<br><br><strong>Symptoms:</strong><br>`;
+                        rec.symptoms.slice(0, 3).forEach(s => {
+                            html += `• ${s}<br>`;
+                        });
+                    }
+                    
+                    // Add prevention tips (for both healthy and diseased)
+                    if (rec.prevention && rec.prevention.length > 0) {
+                        html += `<br><strong>Prevention:</strong><br>`;
+                        rec.prevention.slice(0, 3).forEach(p => {
+                            html += `• ${p}<br>`;
+                        });
+                    }
+                    
+                    // Add treatment for diseased plants
+                    if (!data.detection.is_healthy) {
+                        if (rec.organic_treatment && rec.organic_treatment.length > 0) {
+                            html += `<br><strong>Organic Treatment:</strong><br>`;
+                            rec.organic_treatment.slice(0, 2).forEach(t => {
+                                html += `• ${t}<br>`;
+                            });
+                        }
+                    }
+                    
+                    statusDiv.innerHTML = html;
+                    
+                    // Refresh health detections list
+                    loadHealthDetections();
+                    loadHealthStats();
+                    
+                    const notifType = data.detection.is_healthy ? 'success' : 'warning';
+                    showNotification(`${data.detection.crop_type}: ${data.detection.disease}`, notifType);
+                } else if (data.low_confidence) {
+                    statusDiv.className = 'status-message error';
+                    statusDiv.innerHTML = `
+                        ⚠ Image uploaded but no confident detection<br>
+                        <small>Confidence: ${(data.low_confidence.confidence * 100).toFixed(1)}% (threshold: ${(data.low_confidence.threshold * 100).toFixed(0)}%)</small><br>
+                        <small>Please upload a clearer image of a plant leaf</small>
+                    `;
+                } else {
+                    statusDiv.textContent = `✓ Image uploaded successfully (${data.dimensions.width}x${data.dimensions.height})`;
+                }
+            } else {
+                statusDiv.className = 'status-message error';
+                statusDiv.textContent = `✗ Upload failed: ${data.error || data.detail || 'Unknown error'}`;
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            statusDiv.className = 'status-message error';
+            statusDiv.textContent = `✗ ${error.message || 'Upload failed'}`;
+        }
+    } else {
+        // Handle camera capture (to be implemented)
+        statusDiv.className = 'status-message info';
+        statusDiv.textContent = 'Camera capture feature coming soon. Use image upload for now.';
+    }
+});
+
+// Initialize camera source UI
+updateSourceUI('camera');
+
+console.log('✅ Camera controls initialized');

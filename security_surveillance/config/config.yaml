@@ -66,3 +66,89 @@ logging:
   file: "data/logs/system.log"
   max_size_mb: 10
   backup_count: 3
+
+# Health Monitoring System Configuration (Smart Agriculture)
+health_system:
+  # Model Configuration
+  model:
+    keras_path: "data/models/mobilenet_plantvillage.h5"
+    tflite_path: "data/models/mobilenet_plantvillage.tflite"
+    classes_path: "data/models/plantvillage_classes.json"
+    use_tflite: true  # Enabled for Raspberry Pi 3 optimization (64x faster, 73% smaller)
+    input_size: 224  # MobileNetV2 input size
+  
+  # Detection Settings
+  detection:
+    interval: 5  # seconds between detections
+    confidence_threshold: 0.35  # Minimum confidence for valid detection (lowered for better sensitivity)
+    max_detections_per_hour: 100  # Rate limiting
+    save_images: true  # Save detection images
+    image_quality: 85  # JPEG quality (0-100)
+  
+  # Camera Settings
+  camera:
+    source: "rtsp://172.16.122.6:554/1"  # Same as security camera
+    width: 640
+    height: 480
+    fps: 15  # Lower FPS for agriculture monitoring
+    auto_exposure: true
+    auto_white_balance: true
+  
+  # Preprocessing Options
+  preprocessing:
+    enable_clahe: false  # Contrast enhancement
+    clahe_clip_limit: 2.0
+    clahe_tile_grid_size: [8, 8]
+    enable_blur: false  # Noise reduction
+    blur_kernel_size: [3, 3]
+    normalization_method: "imagenet"  # standard, imagenet, minmax
+    maintain_aspect_ratio: false  # Resize behavior
+  
+  # Database Settings
+  database:
+    path: "data/logs/health_events.db"
+    retention_days: 90  # Auto-delete records older than this
+    export_format: "csv"  # csv, json
+    auto_backup: true
+    backup_interval_hours: 24
+  
+  # Alert Configuration
+  alerts:
+    enable_email: false  # Email notifications
+    enable_sms: false  # SMS notifications
+    severity_levels:
+      low: ["Healthy"]
+      medium: ["Early_blight", "Late_blight", "Leaf_Mold"]
+      high: ["Bacterial_spot", "Target_Spot", "Septoria_leaf_spot"]
+      critical: ["Tomato_mosaic_virus", "Yellow_Leaf_Curl_Virus"]
+    notification_cooldown: 300  # seconds between same-disease alerts
+  
+  # Crop Monitoring
+  crops:
+    monitored: ["Tomato", "Potato", "Pepper", "Grape", "Apple", "Peach"]
+    rotation_interval: 30  # days between crop checks
+    health_check_frequency: "daily"  # hourly, daily, weekly
+  
+  # Disease Recommendations
+  recommendations:
+    database_path: "data/disease_recommendations.json"
+    include_organic_options: true
+    include_chemical_options: true
+    language: "en"  # en, es, fr, etc.
+  
+  # Performance Optimization
+  optimization:
+    enable_gpu: false  # GPU acceleration (if available)
+    enable_multithreading: true
+    thread_count: 2  # Number of processing threads
+    memory_limit_mb: 512  # Maximum memory usage
+    batch_processing: false  # Process multiple images at once
+    batch_size: 4
+  
+  # Image Upload Settings
+  upload:
+    max_file_size_mb: 10
+    allowed_formats: ["jpg", "jpeg", "png"]
+    storage_path: "data/uploaded_images"
+    auto_cleanup: true
+    cleanup_after_days: 7

@@ -20,7 +20,7 @@ TEMPLATES_DIR = DASHBOARD_DIR / "templates"
 
 # Create FastAPI app
 app = FastAPI(
-    title="Edge AI Dashboard",
+    title="EcoGuard",
     description="Unified dashboard for Security Surveillance and Smart Agriculture",
     version="1.0.0",
     docs_url="/api/docs",
@@ -66,7 +66,7 @@ async def root(request: Request):
     """Serve the main dashboard page"""
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "title": "Edge AI Dashboard"}
+        {"request": request, "title": "EcoGuard"}
     )
 
 
@@ -75,7 +75,7 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "service": "Edge AI Dashboard",
+        "service": "EcoGuard",
         "version": "1.0.0"
     }
 
@@ -121,11 +121,13 @@ async def switch_mode(mode: str):
         # Stop current system gracefully
         if app_state.mode == "security" and app_state.security_system:
             print("Stopping security system...")
-            app_state.security_system.stop()
+            if hasattr(app_state.security_system, 'stop'):
+                app_state.security_system.stop()
             time.sleep(1)
         elif app_state.mode == "health" and app_state.health_system:
             print("Stopping health system...")
-            app_state.health_system.stop()
+            if hasattr(app_state.health_system, 'stop'):
+                app_state.health_system.stop()
             time.sleep(1)
         
         # Switch mode
@@ -226,19 +228,63 @@ async def upload_image(file: UploadFile = File(...)):
         
         # Process with appropriate system
         if app_state.mode == "health" and app_state.health_system:
-            # Process with health system
-            from modules.preprocessing import preprocess_for_classification
+            # Don't use preprocess_for_classification - let detector handle it
+            # The detector's preprocess_frame does the correct normalization
+            detection_result = app_state.health_system.detector.detect_disease(
+                image, 
+                draw_results=False, 
+                preprocessed=False
+            )
             
-            processed = preprocess_for_classification(image, target_size=(224, 224))
-            detection = app_state.health_system.detector.detect_disease(processed)
+            # detect_disease returns tuple (detection_dict, annotated_frame)
+            if detection_result and isinstance(detection_result, tuple):
+                detection = detection_result[0]
+            else:
+                detection = detection_result
             
-            if detection:
+            # Get confidence threshold from detector (default 0.6)
+            conf_threshold = app_state.health_system.detector.conf_threshold
+            
+            print(f"[UPLOAD DEBUG] Detection: {detection}")
+            print(f"[UPLOAD DEBUG] Confidence: {detection.get('confidence', 0) if detection else None}, Threshold: {conf_threshold}")
+            
+            if detection and detection.get("confidence", 0) >= conf_threshold:
+                # Map detection keys correctly
+                disease_name = detection.get("disease_name", detection.get("disease_class", "Unknown"))
+                is_healthy = detection.get("is_healthy", False)
+                severity = "low" if is_healthy else "high"
+                crop_type = detection.get("crop_type", "Unknown")
+                confidence = detection["confidence"]
+                
+                # Save detection to database
+                try:
+                    print(f"[DB SAVE] Attempting to save: crop={crop_type}, disease={disease_name}, conf={confidence:.2%}")
+                    app_state.health_system.database.log_detection(
+                        detection=detection,
+                        image_path=str(file_path)
+                    )
+                    print(f"[DB SAVE] Successfully saved detection to database")
+                except Exception as db_error:
+                    print(f"[DB ERROR] Failed to save detection to database: {db_error}")
+                    import traceback
+                    traceback.print_exc()
+                
                 result["detection"] = {
-                    "disease": detection["disease"],
-                    "confidence": detection["confidence"],
-                    "severity": detection.get("severity", "unknown"),
+                    "disease": disease_name,
+                    "crop_type": crop_type,
+                    "confidence": confidence,
+                    "severity": severity,
+                    "is_healthy": is_healthy,
                     "recommendations": detection.get("recommendations", [])
                 }
+            else:
+                # Low confidence - add message about it
+                if detection:
+                    result["low_confidence"] = {
+                        "message": "Detection confidence too low",
+                        "confidence": detection.get("confidence", 0),
+                        "threshold": conf_threshold
+                    }
         
         elif app_state.mode == "security" and app_state.security_system:
             # Process with security system
@@ -442,7 +488,7 @@ async def get_uploaded_images():
 async def startup_event():
     """Initialize on startup"""
     import time
-    print("🚀 Edge AI Dashboard starting...")
+    print("🚀 EcoGuard starting...")
     print(f"📁 Static files: {STATIC_DIR}")
     print(f"📄 Templates: {TEMPLATES_DIR}")
     print(f"🔄 Current mode: {app.state.app_state.mode}")
@@ -452,7 +498,7 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    print("🛑 Edge AI Dashboard shutting down...")
+    print("🛑 EcoGuard shutting down...")
 
 
 # Import and include routers

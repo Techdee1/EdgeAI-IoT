@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edge AI Dashboard - Security & Agriculture</title>
+    <title>EcoGuard - Security & Agriculture</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/static/favicon.png">
@@ -23,14 +23,18 @@
         <div class="header-container">
             <div class="logo">
                 <i class="fas fa-brain"></i>
-                <h1>Edge AI Dashboard</h1>
+                <h1>EcoGuard</h1>
             </div>
             
-            <!-- Mode Switcher -->
+            <!-- Dashboard View Switcher -->
             <div class="mode-switcher">
                 <button id="securityModeBtn" class="mode-btn active" data-mode="security">
                     <i class="fas fa-shield-alt"></i>
                     <span>Security</span>
+                </button>
+                <button id="healthModeBtn" class="mode-btn" data-mode="health">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health</span>
                 </button>
                 <button id="agricultureModeBtn" class="mode-btn" data-mode="agriculture">
                     <i class="fas fa-leaf"></i>
@@ -38,13 +42,19 @@
                 </button>
             </div>
             
-            <!-- Backend Mode Toggle -->
-            <div class="backend-mode-toggle">
-                <span class="mode-label" id="currentModeLabel">Mode: Security</span>
-                <button id="toggleBackendMode" class="toggle-btn" title="Switch system mode">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span id="toggleModeText">Switch to Health</span>
-                </button>
+            <!-- System Mode Selector -->
+            <div class="system-mode-selector">
+                <span class="mode-label">System Mode:</span>
+                <div class="system-mode-buttons">
+                    <button class="system-mode-btn active" data-system-mode="security" title="Security Surveillance">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Security</span>
+                    </button>
+                    <button class="system-mode-btn" data-system-mode="health" title="Crop Health Monitoring">
+                        <i class="fas fa-seedling"></i>
+                        <span>Health</span>
+                    </button>
+                </div>
             </div>
             
             <!-- System Status -->
@@ -202,17 +212,65 @@
         </div>
 
         <!-- ============================================ -->
-        <!-- AGRICULTURE MODE DASHBOARD -->
+        <!-- HEALTH MONITORING DASHBOARD -->
         <!-- ============================================ -->
-        <div id="agricultureDashboard" class="dashboard-mode">
-            
-            <!-- Health Monitoring Section (shown when backend is in health mode) -->
-            <div id="healthSection" class="health-section" style="display: none;">
+        <div id="healthDashboard" class="dashboard-mode">
+            <div id="healthSection" class="health-section">
                 <div class="section-header">
                     <h2><i class="fas fa-heartbeat"></i> Crop Health Monitoring</h2>
                     <span class="section-badge">Active</span>
                 </div>
                 
+                <!-- Camera Source & Upload Controls -->
+                <div class="card camera-controls-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-camera"></i> Image Source</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="camera-source-selector">
+                            <div class="source-option">
+                                <label>
+                                    <input type="radio" name="imageSource" value="camera" checked>
+                                    <i class="fas fa-video"></i> WiFi Camera (RTSP)
+                                </label>
+                                <input type="text" id="rtspUrl" placeholder="rtsp://172.16.122.6:554/1" value="rtsp://172.16.122.6:554/1">
+                            </div>
+                            <div class="source-option">
+                                <label>
+                                    <input type="radio" name="imageSource" value="device">
+                                    <i class="fas fa-laptop"></i> Device Camera
+                                </label>
+                                <select id="deviceCamera">
+                                    <option value="0">Camera 0</option>
+                                    <option value="1">Camera 1</option>
+                                </select>
+                            </div>
+                            <div class="source-option">
+                                <label>
+                                    <input type="radio" name="imageSource" value="upload">
+                                    <i class="fas fa-upload"></i> Upload Image
+                                </label>
+                                <div class="upload-area" id="uploadArea">
+                                    <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png" style="display:none;">
+                                    <button id="selectFileBtn" class="btn btn-secondary">
+                                        <i class="fas fa-file-image"></i> Select Image
+                                    </button>
+                                    <span id="selectedFileName" class="file-name"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="connectCameraBtn" class="btn btn-primary">
+                                <i class="fas fa-plug"></i> Connect Source
+                            </button>
+                            <button id="captureBtn" class="btn btn-success">
+                                <i class="fas fa-camera-retro"></i> Capture & Analyze
+                            </button>
+                        </div>
+                        <div id="cameraStatus" class="status-message"></div>
+                    </div>
+                </div>
+
                 <!-- Health Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -307,8 +365,13 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Agriculture Sensors Section (shown when backend is in security mode) -->
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- AGRICULTURE DASHBOARD -->
+        <!-- ============================================ -->
+        <div id="agricultureDashboard" class="dashboard-mode">
             <div id="agricultureSection" class="agriculture-section">
             <!-- Top Stats Cards -->
             <div class="stats-grid">

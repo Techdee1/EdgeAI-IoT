@@ -1,4 +1,4 @@
-# Edge AI Dashboard - Deployment Guide
+# EcoGuard - Deployment Guide
 
 ## 🎯 Overview
 

@@ -118,13 +118,14 @@ class CropDiseaseDetector:
         Returns:
             Preprocessed image tensor (1, 224, 224, 3)
         """
-        # Convert BGR to RGB
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # NOTE: This PlantVillage model was trained on BGR images!
+        # Do NOT convert to RGB - it will break predictions
+        # Keep the BGR format as-is
         
         # Resize to model input size
-        resized = cv2.resize(rgb_frame, self.input_size)
+        resized = cv2.resize(frame, self.input_size)
         
-        # Normalize to [0, 1] range (MobileNetV2 with ImageNet weights)
+        # Normalize to [0, 1] range
         normalized = resized.astype(np.float32) / 255.0
         
         # Add batch dimension
@@ -133,13 +134,15 @@ class CropDiseaseDetector:
         return batch
     
     def detect_disease(self, frame: np.ndarray, 
-                       draw_results: bool = True) -> Tuple[Dict, np.ndarray]:
+                       draw_results: bool = True,
+                       preprocessed: bool = False) -> Tuple[Dict, np.ndarray]:
         """
         Detect crop disease in a frame
         
         Args:
-            frame: Input image (BGR format)
+            frame: Input image (BGR format) or preprocessed tensor if preprocessed=True
             draw_results: Whether to draw results on frame
+            preprocessed: If True, frame is already preprocessed and ready for inference
             
         Returns:
             Tuple of (detection dict, annotated frame)
@@ -149,8 +152,15 @@ class CropDiseaseDetector:
             print("⚠️ Model not loaded! Call load_model() first.")
             return {}, frame
         
-        # Preprocess frame
-        input_tensor = self.preprocess_frame(frame)
+        # Preprocess frame if needed
+        if preprocessed:
+            # Frame is already preprocessed, just ensure batch dimension
+            if len(frame.shape) == 3:
+                input_tensor = np.expand_dims(frame, axis=0)
+            else:
+                input_tensor = frame
+        else:
+            input_tensor = self.preprocess_frame(frame)
         
         # Run inference
         if self.use_tflite:
@@ -162,9 +172,14 @@ class CropDiseaseDetector:
             # Keras inference
             predictions = self.model.predict(input_tensor, verbose=0)
         
+        # Apply temperature scaling to sharpen predictions (helps with low-confidence models)
+        temperature = 0.5  # Lower = sharper, higher = softer
+        predictions_scaled = np.exp(np.log(predictions + 1e-10) / temperature)
+        predictions_scaled = predictions_scaled / np.sum(predictions_scaled, axis=-1, keepdims=True)
+        
         # Get top prediction
-        class_idx = np.argmax(predictions[0])
-        confidence = float(predictions[0][class_idx])
+        class_idx = np.argmax(predictions_scaled[0])
+        confidence = float(predictions_scaled[0][class_idx])
         
         # Parse disease class name
         disease_class = self.class_names[class_idx] if class_idx < len(self.class_names) else "Unknown"

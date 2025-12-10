@@ -109,12 +109,15 @@ class HealthSystem:
         
         # 2. Crop Disease Detector
         health_config = self.config.get('health_system', {})
+        detection_config = health_config.get('detection', {})
+        model_config = health_config.get('model', {})
+        
         self.detector = CropDiseaseDetector(
-            model_path=health_config.get('model_path', 'data/models/mobilenet_plantvillage.h5'),
-            classes_path='data/models/plantvillage_classes.json',
+            model_path=model_config.get('keras_path', 'data/models/mobilenet_plantvillage.h5'),
+            classes_path=model_config.get('classes_path', 'data/models/plantvillage_classes.json'),
             recommendations_path='data/disease_recommendations.json',
-            conf_threshold=health_config.get('confidence_threshold', 0.6),
-            use_tflite=health_config.get('use_tflite', False)
+            conf_threshold=detection_config.get('confidence_threshold', 0.35),
+            use_tflite=model_config.get('use_tflite', False)
         )
         self.detector.load_model()
         
@@ -346,15 +349,22 @@ class HealthSystem:
         
         # Stop camera
         if self.camera:
-            self.camera.stop()
+            if hasattr(self.camera, 'stop'):
+                self.camera.stop()
+            elif hasattr(self.camera, 'release'):
+                self.camera.release()
             print("   ✅ Camera stopped")
         
         # Database will auto-close on program exit
         if self.database:
             print("   ✅ Database flushed")
         
-        # Close windows
-        cv2.destroyAllWindows()
+        # Close windows (only if display is enabled)
+        try:
+            if self.config.get('display', {}).get('show_preview', False):
+                cv2.destroyAllWindows()
+        except:
+            pass  # Ignore errors in headless environments
         
         # Print final statistics
         print("\n" + "=" * 70)
