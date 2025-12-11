@@ -33,7 +33,7 @@ zones:
       alert_level: "high"
 
 alerts:
-  gpio_enabled: false  # Set to true when running on Pi with GPIO
+  gpio_enabled: true  # Set to true when running on Pi with GPIO
   led_green_pin: 17
   led_red_pin: 27
   buzzer_pin: 22
@@ -152,3 +152,186 @@ health_system:
     storage_path: "data/uploaded_images"
     auto_cleanup: true
     cleanup_after_days: 7
+
+# Agriculture IoT System Configuration (ESP32 Sensors & Smart Irrigation)
+agriculture:
+  enabled: true  # Enable agriculture/irrigation mode
+  
+  # MQTT Broker Configuration (Raspberry Pi)
+  mqtt:
+    broker_host: "localhost"  # MQTT broker address (localhost for same device)
+    broker_port: 1883  # Default MQTT port
+    client_id: "RaspberryPi_Dashboard"
+    keepalive: 60  # seconds
+    qos: 1  # Quality of Service (0, 1, or 2)
+    clean_session: true
+    
+    # MQTT Topics
+    topics:
+      sensor_data: "agriculture/sensors/data"  # ESP32 publishes sensor readings here
+      pump_control: "agriculture/control/pump"  # Dashboard publishes pump commands here
+      system_status: "agriculture/system/status"  # System status updates
+    
+    # Connection Settings
+    reconnect_delay: 5  # seconds between reconnection attempts
+    max_reconnect_attempts: 10  # 0 = infinite
+    connection_timeout: 10  # seconds
+  
+  # ESP32 Hardware Configuration
+  esp32:
+    device_id: "ESP32_Agriculture_Sensors"  # Unique device identifier
+    wifi_ssid: "YOUR_WIFI_SSID"  # TODO: Update with your WiFi network name
+    wifi_password: "YOUR_WIFI_PASSWORD"  # TODO: Update with your WiFi password
+    firmware_version: "1.0.0"
+    
+    # Pin Configuration (must match ESP32 code)
+    pins:
+      soil_moisture: 34  # GPIO 34 (Analog)
+      dht11_data: 4      # GPIO 4 (Digital)
+      ldr_sensor: 35     # GPIO 35 (Analog)
+      relay_pump: 26     # GPIO 26 (Digital)
+    
+    # Sensor Calibration
+    calibration:
+      soil_moisture:
+        dry_value: 3200    # Analog reading in completely dry soil
+        wet_value: 1200    # Analog reading in completely wet soil
+        min_percent: 0
+        max_percent: 100
+      
+      temperature:
+        offset: 0.0        # Temperature calibration offset (°C)
+        unit: "celsius"    # celsius or fahrenheit
+      
+      light:
+        min_lux: 0
+        max_lux: 2000
+        night_threshold: 50  # lux value below which is considered night
+  
+  # Sensor Reading Configuration
+  sensors:
+    update_interval: 30  # seconds between sensor readings
+    enabled_sensors:
+      - soil_moisture
+      - temperature
+      - humidity
+      - light_intensity
+    
+    # Sensor Thresholds & Alerts
+    thresholds:
+      soil_moisture:
+        critical_low: 20   # % - Emergency irrigation
+        warning_low: 30    # % - Regular irrigation
+        optimal_min: 40    # % - Optimal range start
+        optimal_max: 70    # % - Optimal range end
+        warning_high: 80   # % - Overwatering warning
+      
+      temperature:
+        min: 10            # °C - Low temperature alert
+        optimal_min: 15    # °C - Optimal range start
+        optimal_max: 30    # °C - Optimal range end
+        max: 40            # °C - High temperature alert
+      
+      humidity:
+        min: 30            # % - Low humidity alert
+        optimal_min: 40    # % - Optimal range start
+        optimal_max: 80    # % - Optimal range end
+        max: 90            # % - High humidity alert
+      
+      light_intensity:
+        night_max: 50      # lux - Below this is night
+        optimal_min: 200   # lux - Optimal daylight start
+        optimal_max: 2000  # lux - Optimal daylight end
+  
+  # Smart Irrigation Configuration
+  irrigation:
+    enabled: true
+    mode: "auto"  # auto, manual, scheduled, off
+    
+    # Automatic Irrigation Rules
+    auto_rules:
+      # Rule 1: Critical Low Moisture (Always irrigate)
+      critical_trigger:
+        moisture_below: 20  # %
+        duration: 60        # seconds
+        ignore_time: false  # Irrigate even at night
+      
+      # Rule 2: Low Moisture + Daytime (Regular irrigation)
+      daytime_trigger:
+        moisture_below: 30  # %
+        light_above: 200    # lux (daytime)
+        duration: 30        # seconds
+      
+      # Rule 3: Prevent Overwatering
+      overwatering_protection:
+        moisture_above: 70  # % - Skip irrigation
+        cooldown: 3600      # seconds - Wait before next irrigation
+      
+      # Rule 4: Temperature Compensation
+      temperature_adjustment:
+        enabled: true
+        high_temp_threshold: 30  # °C
+        duration_increase: 10     # seconds added when hot
+    
+    # Manual Irrigation Settings
+    manual:
+      default_duration: 30  # seconds
+      min_duration: 10      # seconds
+      max_duration: 300     # seconds (5 minutes)
+    
+    # Scheduled Irrigation (Optional)
+    schedule:
+      enabled: false
+      times:
+        - "06:00"  # Morning watering
+        - "18:00"  # Evening watering
+      duration: 30  # seconds per scheduled event
+      skip_if_wet: true  # Skip if soil moisture > optimal_min
+    
+    # Safety Limits
+    safety:
+      max_daily_runtime: 1800  # seconds (30 minutes total per day)
+      min_interval: 600         # seconds between irrigations (10 minutes)
+      emergency_shutoff: true   # Auto-shutoff on sensor failure
+      pump_timeout: 300         # seconds - Force shutoff if stuck on
+  
+  # Database Configuration
+  database:
+    path: "data/logs/agriculture.db"
+    retention_days: 90  # Auto-delete old sensor readings
+    log_interval: 300   # seconds - Store reading to DB every 5 minutes
+    tables:
+      - sensor_readings      # Timestamped sensor data
+      - irrigation_events    # Pump activation logs
+      - agriculture_alerts   # Threshold violations
+  
+  # Alert Configuration
+  alerts:
+    enabled: true
+    cooldown: 600  # seconds between duplicate alerts
+    severity_levels:
+      critical: ["soil_moisture_critical", "sensor_failure", "pump_failure"]
+      warning: ["soil_moisture_low", "temperature_extreme", "humidity_extreme"]
+      info: ["irrigation_complete", "sensor_online"]
+    
+    # Alert Actions
+    actions:
+      log_to_database: true
+      display_on_dashboard: true
+      send_notification: false  # Future: Email/SMS integration
+  
+  # Water Usage Tracking
+  water_tracking:
+    enabled: true
+    pump_flow_rate: 1.0  # liters per second (calibrate for your pump)
+    daily_limit: 50      # liters per day
+    monthly_limit: 1500  # liters per month
+    alert_on_high_usage: true
+    high_usage_threshold: 40  # liters per day
+  
+  # Dashboard Display Settings
+  dashboard:
+    chart_history_hours: 24  # Show last 24 hours of data
+    refresh_interval: 5      # seconds
+    show_raw_values: false   # Show calibrated values only
+    decimal_places: 1        # Precision for sensor readings
