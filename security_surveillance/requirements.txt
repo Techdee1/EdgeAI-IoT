@@ -5,12 +5,25 @@ pyyaml>=6.0
 torch>=2.0.0
 torchvision>=0.15.0
 
+# TensorFlow for Crop Disease Detection (Health System)
+tensorflow>=2.13.0  # Full TensorFlow (includes TFLite runtime)
+# Alternative for Raspberry Pi (lighter, TFLite only):
+# tflite-runtime>=2.13.0  # Uncomment this and comment tensorflow above for Pi deployment
+
+# Image Processing
+Pillow>=10.0.0  # PIL - Used in preprocessing module for image handling
+
 # FastAPI Dashboard Dependencies
 fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 aiofiles>=23.2.1
 websockets>=12.0
+jinja2>=3.1.0  # Template engine for FastAPI
 
 # MQTT for ESP32 Agriculture Sensors
 paho-mqtt>=1.6.1
+
+# Testing & Development (Optional)
+requests>=2.31.0  # Used in test files for API testing
+pytest>=7.4.0  # For running tests
